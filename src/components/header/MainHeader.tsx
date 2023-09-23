@@ -6,6 +6,9 @@ import {
   Text,
   createStyles,
   TextInput,
+  rem,
+  ActionIcon,
+  useMantineTheme,
 } from "@mantine/core";
 import MainLogo from "../../assets/image/MainLogo.svg";
 import {
@@ -16,20 +19,85 @@ import {
   IconSettings,
   IconTrash,
   IconChevronDown,
+  IconShoe,
+  IconUserCheck,
+  IconLocation,
 } from "@tabler/icons-react";
 import { CiSearch } from "react-icons/ci";
+import { ReactHTML, useState } from "react";
+
+const SearchCategory = {
+  SHOE: <IconShoe size={"1.3rem"} stroke={1.5} />,
+  SHOP: <IconUserCheck size={"1.3rem"} stroke={1.5} />,
+  LOCATION: <IconLocation size={"1.3rem"} stroke={1.5} />,
+};
+
 const MainHeader = () => {
+  const theme = useMantineTheme();
+  const [searchCategory, setSearchCategory] = useState<JSX.Element>(
+    SearchCategory.SHOE
+  );
   const { classes } = useStyles();
 
   return (
     <div className={classes.main_container}>
       <img src={MainLogo} className={classes.logo} />
       <TextInput
-        style={{
-          backgroundColor: "yellow",
+        classNames={{
+          input: classes.search_input,
+          icon: classes.search_icon,
         }}
-        icon={<CiSearch />}
-        placeholder="Your email"
+        rightSection={
+          <Menu transitionProps={{ transition: "pop-top-right" }}>
+            <Menu.Target>
+              <ActionIcon size={36} radius="xl" color={"blue"} variant="filled">
+                {searchCategory}
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                icon={
+                  <IconShoe
+                    size={"1.3rem"}
+                    stroke={1.5}
+                    color={theme.colors.blue[6]}
+                  />
+                }
+                onClick={() => setSearchCategory(SearchCategory.SHOE)}
+              >
+                Shoe
+              </Menu.Item>
+              <Menu.Item
+                icon={
+                  <IconUserCheck
+                    size={"1.3rem"}
+                    stroke={1.5}
+                    color={theme.colors.cyan[6]}
+                  />
+                }
+                onClick={() => setSearchCategory(SearchCategory.LOCATION)}
+              >
+                Location
+              </Menu.Item>
+              <Menu.Item
+                icon={
+                  <IconLocation
+                    size={"1.3rem"}
+                    stroke={1.5}
+                    color={theme.colors.violet[6]}
+                  />
+                }
+                onClick={() => setSearchCategory(SearchCategory.SHOP)}
+              >
+                SHOP
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        }
+        iconWidth={52}
+        rightSectionWidth={52}
+        icon={<CiSearch size={20} />}
+        placeholder="Search here"
       ></TextInput>
       <Menu>
         <Menu.Target>
@@ -90,12 +158,13 @@ const useStyles = createStyles({
   logo: {
     height: "6em",
   },
+  search_wrapper: {},
   search_input: {
-    borderRadius: "5em",
-    fontWeight: 500,
-    width: "40em",
-    color: "#000",
+    borderRadius: rem(20),
     backgroundColor: "#f6f6f6",
+    width: "800px",
+    height: rem(48),
+    paddingLeft: rem(80),
   },
   menu_button: {
     backgroundColor: "#f6f6f6",
@@ -118,6 +187,7 @@ const useStyles = createStyles({
   avatar: {
     borderRadius: "20em",
   },
+  search_icon: {},
 });
 
 export default MainHeader;
