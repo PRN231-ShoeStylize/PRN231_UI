@@ -1,9 +1,10 @@
 import React from "react";
 import { useRoutes } from "react-router-dom";
 import LoginPage from "../page/login.page";
-import { MainNavbar } from "../components/common/MainNavbar";
 import RegisterPage from "../page/register.page";
 import MainHeader from "../components/header/MainHeader";
+import HomePage from "../page/home.page";
+import ShopHomePage from "../page/shop/shop.page";
 
 const CommonRoute = () => {
   let element = useRoutes([
@@ -14,7 +15,7 @@ const CommonRoute = () => {
     },
     {
       path: "home",
-      element: <MainNavbar />,
+      element: <HomePage />,
     },
     {
       path: "/register",
@@ -27,6 +28,10 @@ const CommonRoute = () => {
     {
       path: "/header",
       element: <MainHeader />,
+    },
+    {
+      path: "/shop",
+      element: <ShopHomePage />,
     },
   ]);
 

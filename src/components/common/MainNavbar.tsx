@@ -19,6 +19,7 @@ import {
   IconLogout,
   IconSwitchHorizontal,
 } from "@tabler/icons-react";
+import { IMainNavBarProps } from "./navbar.model";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -84,16 +85,16 @@ const mockdata = [
   { icon: IconSettings, label: "Settings" },
 ];
 
-export function MainNavbar() {
+
+const MainNavbar : React.FC<IMainNavBarProps> = ({items}) => {
   const [active, setActive] = useState(2);
 
-  const links = mockdata.map((link, index) => (
+  const links = items.map((link, index) => (
     <NavbarLink
-      {...link}
+      
       key={link.label}
       active={index === active}
-      onClick={() => setActive(index)}
-    />
+      onClick={() => setActive(index)} icon={link.icon} label={link.label} />
   ));
 
   return (
@@ -113,3 +114,5 @@ export function MainNavbar() {
     </Navbar>
   );
 }
+
+export default MainNavbar;
