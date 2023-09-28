@@ -7,6 +7,7 @@ import { IMainNavBarProp } from "../../components/common/navbar.model";
 import ProposalCard from "../../components/proposal-card/proposal.component";
 import { useDisclosure } from "@mantine/hooks";
 import { FormikProvider, useFormik } from "formik";
+import { showNotification } from "@mantine/notifications";
 
 
 
@@ -15,19 +16,39 @@ const ShopHomePage: React.FC = () => {
         { icon: IconHome2, label: "Home" },
     ];
 
-    const [opened, { open, close }] = useDisclosure();
     const [value, setValue] = useState('');
+    const [focused, setFocused] = useState(false);
+    const floating = focused || value.length > 0 || undefined;
+
+    const [opened, { open, close }] = useDisclosure();
+
     const formik = useFormik({
         initialValues: {
             username: undefined,
             password: undefined
         },
-        onSubmit: (values) => handleLogin(values)
+        onSubmit: (values) => handleSubmit(values)
     });
 
-    const handleLogin = (value: any) => {
-
+    const handleSubmit = (value: any) => {
+        const result = true;
+        if (result) {
+            showNotification({
+                title: 'Success',
+                message: 'Proposal submitted',
+                color: "lime"
+                // classNames: classes,
+            })
+        }else{
+            showNotification({
+                title: 'Error',
+                message: 'Failed to submit proposal',
+                color: "red"
+                // classNames: classes,
+            })
+        }
     }
+
 
     return (
         <>
@@ -40,14 +61,14 @@ const ShopHomePage: React.FC = () => {
                     <ProposalCard handleOpenSubmitModal={open} />
                 </Grid.Col>
             </Grid>
-            <Modal opened={opened} onClose={close} title="Proposal" centered>
+            <Modal opened={opened} onClose={close} title={<h2>Create Proposal</h2>} centered>
                 <FormikProvider value={formik}>
                     <TextInput
                         label="Mock label"
                         value={value}
                         onChange={(event) => setValue(event.currentTarget.value)}
                     />
-                    <Button  onClick={() => formik.handleSubmit()} style={{color: 'white' }} fullWidth mt="md" radius="md">
+                    <Button onClick={() => formik.handleSubmit()} style={{ color: 'white' }} fullWidth mt="md" radius="md">
                         Submit
                     </Button>
                 </FormikProvider>

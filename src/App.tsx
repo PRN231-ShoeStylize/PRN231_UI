@@ -3,6 +3,7 @@ import { MantineProvider } from "@mantine/core";
 
 import { BrowserRouter } from "react-router-dom";
 import AppRoute from "./routes/AppRoute";
+import { Notifications } from "@mantine/notifications";
 
 const COIN_CARDS = [
   {
@@ -25,6 +26,7 @@ function App() {
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
       <BrowserRouter>
+        <Notifications limit={5} autoClose={4000}/>
         <AppRoute />
       </BrowserRouter>
     </MantineProvider>
