@@ -1,4 +1,3 @@
-import React from "react";
 import { useRoutes } from "react-router-dom";
 import LoginPage from "../page/login.page";
 import RegisterPage from "../page/register.page";
@@ -30,9 +29,20 @@ const CommonRoute = () => {
       element: <MainHeader />,
     },
     {
-      path: "/shop",
-      element: <ShopHomePage />,
+
+      path: "/chat",
+      element: <ChatPage />,
     },
+    {
+      path: "/create",
+      element: <CreatePostPage />,
+
+     
+    },
+    {
+       path: "/shop",
+      element: <ShopHomePage />,
+    }
   ]);
 
   return element;

@@ -1,0 +1,13 @@
+import { httpClient } from "../../utils/http-client";
+import { CreatePostParams, GetPostResult } from "./post.model";
+
+export const PostAPI = {
+  getAllPost: async () => {
+    const res = await httpClient.get<GetPostResult[]>(`/Post`);
+    return res.data;
+  },
+  createPost: async (params: CreatePostParams) => {
+    const res = await httpClient.post<any>(`/Post`, params);
+    return res.data;
+  },
+};

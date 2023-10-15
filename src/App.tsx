@@ -3,7 +3,11 @@ import { MantineProvider } from "@mantine/core";
 
 import { BrowserRouter } from "react-router-dom";
 import AppRoute from "./routes/AppRoute";
+
+import { QueryClient, QueryClientProvider } from "react-query";
+
 import { Notifications } from "@mantine/notifications";
+
 
 const COIN_CARDS = [
   {
@@ -22,13 +26,24 @@ const COIN_CARDS = [
   date: string;
 }[];
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      cacheTime: 0,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 function App() {
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
-      <BrowserRouter>
-        <Notifications limit={5} autoClose={4000}/>
-        <AppRoute />
-      </BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+            <Notifications limit={5} autoClose={4000}/>
+          <AppRoute />
+        </BrowserRouter>
+      </QueryClientProvider>
     </MantineProvider>
   );
 }
