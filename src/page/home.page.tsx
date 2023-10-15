@@ -29,28 +29,6 @@ export const HomePage: React.FC = (): React.ReactElement => {
   }
   return (
     <>
-      <HeaderLayout />{" "}
-      <Grid ml="lg" mr="lg">
-        {COIN_CARDS.map((coin, index) => {
-          return (
-            <Grid.Col
-              md={6}
-              lg={6}
-              style={{
-                height: "160px",
-                width: "400px",
-              }}
-              key={index}
-            >
-              <CoinCardComponent
-                date={coin.date}
-                logo={coin.image}
-                name={coin.name}
-              />
-            </Grid.Col>
-          );
-        })}
-      </Grid>
       {data?.map((item, index) => (
         <PostCard
           description={item.content}
@@ -64,3 +42,5 @@ export const HomePage: React.FC = (): React.ReactElement => {
     </>
   );
 };
+
+export default HomePage;

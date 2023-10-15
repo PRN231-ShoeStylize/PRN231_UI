@@ -3,7 +3,11 @@ import { MantineProvider } from "@mantine/core";
 
 import { BrowserRouter } from "react-router-dom";
 import AppRoute from "./routes/AppRoute";
+
 import { QueryClient, QueryClientProvider } from "react-query";
+
+import { Notifications } from "@mantine/notifications";
+
 
 const COIN_CARDS = [
   {
@@ -36,6 +40,7 @@ function App() {
     <MantineProvider withGlobalStyles withNormalizeCSS>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
+            <Notifications limit={5} autoClose={4000}/>
           <AppRoute />
         </BrowserRouter>
       </QueryClientProvider>
