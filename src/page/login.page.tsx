@@ -33,7 +33,7 @@ const LoginPage: React.FC = (): React.ReactElement => {
       {
         onSuccess(data, variables, context) {
           sessionStorage.setItem(TOKEN, data);
-          navigate("/home");
+          navigate("/");
         },
         onError(error, variables, context) {
           console.log(error);

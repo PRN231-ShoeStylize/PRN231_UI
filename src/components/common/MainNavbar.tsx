@@ -7,19 +7,11 @@ import {
   createStyles,
   Stack,
   rem,
+  Avatar,
 } from "@mantine/core";
-import {
-  IconHome2,
-  IconGauge,
-  IconDeviceDesktopAnalytics,
-  IconFingerprint,
-  IconCalendarStats,
-  IconUser,
-  IconSettings,
-  IconLogout,
-  IconSwitchHorizontal,
-} from "@tabler/icons-react";
+import { IconLogout, IconSwitchHorizontal } from "@tabler/icons-react";
 import { IMainNavBarProps } from "./navbar.model";
+import { useNavigate } from "react-router";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -75,26 +67,26 @@ function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
   );
 }
 
-const mockdata = [
-  { icon: IconHome2, label: "Home" },
-  { icon: IconGauge, label: "Dashboard" },
-  { icon: IconDeviceDesktopAnalytics, label: "Analytics" },
-  { icon: IconCalendarStats, label: "Releases" },
-  { icon: IconUser, label: "Account" },
-  { icon: IconFingerprint, label: "Security" },
-  { icon: IconSettings, label: "Settings" },
-];
-
-
-const MainNavbar : React.FC<IMainNavBarProps> = ({items}) => {
-  const [active, setActive] = useState(2);
+const MainNavbar: React.FC<IMainNavBarProps> = ({ items }) => {
+  const [active, setActive] = useState(0);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    sessionStorage.clear();
+    localStorage.clear();
+    navigate("/login");
+  };
 
   const links = items.map((link, index) => (
     <NavbarLink
-      
       key={link.label}
       active={index === active}
-      onClick={() => setActive(index)} icon={link.icon} label={link.label} />
+      onClick={() => {
+        navigate(link.href);
+        setActive(index);
+      }}
+      icon={link.icon}
+      label={link.label}
+    />
   ));
 
   return (
@@ -108,11 +100,11 @@ const MainNavbar : React.FC<IMainNavBarProps> = ({items}) => {
       <Navbar.Section>
         <Stack justify="center" spacing={0}>
           <NavbarLink icon={IconSwitchHorizontal} label="Change account" />
-          <NavbarLink icon={IconLogout} label="Logout" />
+          <NavbarLink icon={IconLogout} onClick={handleLogout} label="Logout" />
         </Stack>
       </Navbar.Section>
     </Navbar>
   );
-}
+};
 
 export default MainNavbar;

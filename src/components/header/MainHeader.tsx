@@ -25,6 +25,7 @@ import {
 } from "@tabler/icons-react";
 import { CiSearch } from "react-icons/ci";
 import { ReactHTML, useState } from "react";
+import { useNavigate } from "react-router";
 
 const SearchCategory = {
   SHOE: <IconShoe size={"1.3rem"} stroke={1.5} />,
@@ -34,6 +35,7 @@ const SearchCategory = {
 
 const MainHeader = () => {
   const theme = useMantineTheme();
+  const navigate = useNavigate();
   const [searchCategory, setSearchCategory] = useState<JSX.Element>(
     SearchCategory.SHOE
   );
@@ -41,64 +43,76 @@ const MainHeader = () => {
 
   return (
     <div className={classes.main_container}>
-      <img src={MainLogo} className={classes.logo} />
-      <TextInput
-        classNames={{
-          input: classes.search_input,
-          icon: classes.search_icon,
-        }}
-        rightSection={
-          <Menu transitionProps={{ transition: "pop-top-right" }}>
-            <Menu.Target>
-              <ActionIcon size={36} radius="xl" color={"blue"} variant="filled">
-                {searchCategory}
-              </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item
-                icon={
-                  <IconShoe
-                    size={"1.3rem"}
-                    stroke={1.5}
-                    color={theme.colors.blue[6]}
-                  />
-                }
-                onClick={() => setSearchCategory(SearchCategory.SHOE)}
-              >
-                Shoe
-              </Menu.Item>
-              <Menu.Item
-                icon={
-                  <IconUserCheck
-                    size={"1.3rem"}
-                    stroke={1.5}
-                    color={theme.colors.cyan[6]}
-                  />
-                }
-                onClick={() => setSearchCategory(SearchCategory.LOCATION)}
-              >
-                Location
-              </Menu.Item>
-              <Menu.Item
-                icon={
-                  <IconLocation
-                    size={"1.3rem"}
-                    stroke={1.5}
-                    color={theme.colors.violet[6]}
-                  />
-                }
-                onClick={() => setSearchCategory(SearchCategory.SHOP)}
-              >
-                SHOP
-              </Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
-        }
-        iconWidth={52}
-        rightSectionWidth={52}
-        icon={<CiSearch size={20} />}
-        placeholder="Search here"
-      ></TextInput>
+      <div className={classes.left_wrapper}>
+        <img
+          src={MainLogo}
+          className={classes.logo}
+          onClick={() => navigate("/")}
+        />
+        <TextInput
+          classNames={{
+            input: classes.search_input,
+            icon: classes.search_icon,
+          }}
+          rightSection={
+            <Menu transitionProps={{ transition: "pop-top-right" }}>
+              <Menu.Target>
+                <ActionIcon
+                  size={36}
+                  radius="xl"
+                  color={"blue"}
+                  variant="filled"
+                >
+                  {searchCategory}
+                </ActionIcon>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  icon={
+                    <IconShoe
+                      size={"1.3rem"}
+                      stroke={1.5}
+                      color={theme.colors.blue[6]}
+                    />
+                  }
+                  onClick={() => setSearchCategory(SearchCategory.SHOE)}
+                >
+                  Shoe
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    <IconUserCheck
+                      size={"1.3rem"}
+                      stroke={1.5}
+                      color={theme.colors.cyan[6]}
+                    />
+                  }
+                  onClick={() => setSearchCategory(SearchCategory.LOCATION)}
+                >
+                  Location
+                </Menu.Item>
+                <Menu.Item
+                  icon={
+                    <IconLocation
+                      size={"1.3rem"}
+                      stroke={1.5}
+                      color={theme.colors.violet[6]}
+                    />
+                  }
+                  onClick={() => setSearchCategory(SearchCategory.SHOP)}
+                >
+                  SHOP
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
+          }
+          iconWidth={52}
+          rightSectionWidth={52}
+          icon={<CiSearch size={20} />}
+          placeholder="Search here"
+        ></TextInput>
+      </div>
+
       <Menu>
         <Menu.Target>
           <Button className={classes.menu_button}>
@@ -149,14 +163,20 @@ const MainHeader = () => {
 
 const useStyles = createStyles({
   main_container: {
-    width: "100vw",
+    width: "99vw",
     height: "6rem",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
   },
+  left_wrapper: {
+    display: "flex",
+    alignItems: "center",
+  },
   logo: {
     height: "6em",
+    cursor: "pointer",
+    marginRight: rem(300),
   },
   search_wrapper: {},
   search_input: {
@@ -164,7 +184,6 @@ const useStyles = createStyles({
     backgroundColor: "#f6f6f6",
     width: "800px",
     height: rem(48),
-    paddingLeft: rem(80),
   },
   menu_button: {
     backgroundColor: "#f6f6f6",
