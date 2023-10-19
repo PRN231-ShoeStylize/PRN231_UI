@@ -10,13 +10,13 @@ import {
   SimpleGrid,
   ActionIcon,
 } from "@mantine/core";
-import PostCard from "../components/card/PostCard";
+import PostCard, { PostCardType } from "../../components/card/PostCard";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { uploadImage } from "../utils/firebase";
-import { useCreatePost } from "../hooks/useCreatePost";
+import { uploadImage } from "../../utils/firebase";
+import { useCreatePost } from "../../hooks/useCreatePost";
 import { useNavigate } from "react-router";
 
 type Inputs = {
@@ -33,12 +33,13 @@ const CreatePostPage = () => {
     watch,
   } = useForm<Inputs>();
   const navigate = useNavigate();
+  const [isCreateLoading, setisCreateLoading] = useState<boolean>(false);
   const { mutate: createPost, isLoading: isCreatePostLoading } =
     useCreatePost();
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     var urls: string[] = [];
-    console.log(files[0]);
+    setisCreateLoading(true);
 
     await Promise.all(
       files?.map(async (item: FileWithPath) => {
@@ -49,12 +50,13 @@ const CreatePostPage = () => {
         }
       })
     );
+    setisCreateLoading(false);
 
     createPost(
       { content: data.content, resourceUrl: "", postResources: urls },
       {
         onSuccess(data, variables, context) {
-          navigate("/home");
+          navigate("/");
         },
         onError(error, variables, context) {
           console.log(error);
@@ -81,7 +83,10 @@ const CreatePostPage = () => {
     <div className={classes.main_container}>
       <div className={classes.main_wrapper}>
         <div className={classes.demo_wrapper}>
-          <ActionIcon className={classes.back_wrapper}>
+          <ActionIcon
+            className={classes.back_wrapper}
+            onClick={() => navigate("/")}
+          >
             <IconArrowLeft className={classes.back_button} />
           </ActionIcon>
           <PostCard
@@ -90,6 +95,7 @@ const CreatePostPage = () => {
             avatar="https://cdn.dribbble.com/userupload/10064008/file/original-ed9f97edacf253ce306dbca6adbbb5ff.png?resize=752x752"
             location="Caizo, egypt"
             name="imozix"
+            postType={PostCardType.DEMO}
           />
         </div>
         <div className={classes.form_wrapper}>
@@ -125,7 +131,7 @@ const CreatePostPage = () => {
             </div>
             <Button
               type="submit"
-              loading={isCreatePostLoading}
+              loading={isCreatePostLoading || isCreateLoading}
               className={classes.button}
             >
               Create
@@ -148,13 +154,15 @@ const useStyles = createStyles({
     padding: `${rem(40)} 0 ${rem(100)} 0`,
   },
   main_wrapper: {
-    width: rem(1400),
+    width: rem(1412),
     border: "1px solid #eee",
     borderRadius: rem(20),
     display: "flex",
     backgroundColor: "#ffffff",
   },
-  demo_wrapper: {},
+  demo_wrapper: {
+    marginRight: "12px",
+  },
   form_wrapper: {
     margin: `${rem(6)} 0`,
     flex: 1,

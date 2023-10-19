@@ -10,4 +10,8 @@ export const PostAPI = {
     const res = await httpClient.post<any>(`/Post`, params);
     return res.data;
   },
+  getPostByUserId: async (userId: number) => {
+    const res = await httpClient.get<GetPostResult[]>(`/Post/user/${userId}`);
+    return res.data;
+  },
 };

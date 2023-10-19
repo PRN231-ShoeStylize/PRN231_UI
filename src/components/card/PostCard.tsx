@@ -1,15 +1,28 @@
-import React from "react";
-import { Avatar, Button, Image, createStyles, rem } from "@mantine/core";
+import React, { useEffect, useState } from "react";
+import {
+  Avatar,
+  Button,
+  Image,
+  Tooltip,
+  createStyles,
+  rem,
+} from "@mantine/core";
 import {
   IconDots,
   IconMessageShare,
   IconSquareRoundedPlus,
 } from "@tabler/icons-react";
 import { FileWithPath } from "@mantine/dropzone";
-import { Carousel } from "@mantine/carousel";
+import { Carousel, Embla, useAnimationOffsetEffect } from "@mantine/carousel";
 
 function isFileWithPath(pet: FileWithPath | string): pet is FileWithPath {
   return (pet as FileWithPath).path !== undefined;
+}
+
+export enum PostCardType {
+  POST = "POST",
+  PROPOSAL = "PROPOSAL",
+  DEMO = "DEMO",
 }
 
 export type PostCardProps = {
@@ -18,6 +31,7 @@ export type PostCardProps = {
   location: string;
   description: string;
   images: FileWithPath[] | string[];
+  postType: PostCardType;
 };
 
 const PostCard = ({
@@ -26,8 +40,35 @@ const PostCard = ({
   images,
   location,
   name,
+  postType,
 }: PostCardProps) => {
+  const [data, setData] = useState<{
+    chatToolTip: string;
+    createToolTip: string;
+  }>({ chatToolTip: "Demo", createToolTip: "Demo" });
+
+  useEffect(() => {
+    switch (postType) {
+      case PostCardType.POST:
+        setData({
+          chatToolTip: "Chat with provider",
+          createToolTip: "Create order",
+        });
+
+        break;
+      case PostCardType.PROPOSAL:
+        setData({
+          chatToolTip: "Chat with owner",
+          createToolTip: "Create proposal",
+        });
+        break;
+    }
+  }, []);
+
+  const TRANSITION_DURATION = 200;
   const { classes } = useStyles();
+  const [embla, setEmbla] = useState<Embla | null>(null);
+  useAnimationOffsetEffect(embla, TRANSITION_DURATION);
 
   const renderImages = images.map((item, index) => {
     var imageUrl: string = item as string;
@@ -38,13 +79,11 @@ const PostCard = ({
     }
 
     return (
-      <Carousel.Slide className={classes.image_wrapper} key={index}>
+      <Carousel.Slide h={"auto"} className={classes.image_wrapper} key={index}>
         <img
           onLoad={() => URL.revokeObjectURL(imageUrl)}
           src={imageUrl}
           className={classes.image}
-
-          // fit="unset"
         />
       </Carousel.Slide>
     );
@@ -69,13 +108,11 @@ const PostCard = ({
         <p>{description}</p>
       </div>
       <Carousel
+        getEmblaApi={setEmbla}
         style={{
           overflow: "hidden",
-          backgroundColor: "#E8DED1",
           margin: `${rem(10)} ${rem(10)}`,
-          maxWidth: rem(800),
           border: "1px solid #E8DED1",
-          paddingBottom: 0,
           borderRadius: rem(30),
         }}
       >
@@ -84,14 +121,24 @@ const PostCard = ({
 
       <div className={classes.action_wrapper}>
         <div className={classes.icon_wrapper}>
-          <Button className={classes.button} variant="subtle">
-            <IconMessageShare />
-          </Button>
+          <Tooltip
+            label={data.chatToolTip}
+            transitionProps={{ transition: "pop-top-left", duration: 300 }}
+          >
+            <Button className={classes.button} variant="subtle">
+              <IconMessageShare />
+            </Button>
+          </Tooltip>
         </div>
         <div className={classes.icon_wrapper}>
-          <Button className={classes.button} variant="subtle">
-            <IconSquareRoundedPlus />
-          </Button>
+          <Tooltip
+            label={data.createToolTip}
+            transitionProps={{ transition: "pop-top-left", duration: 300 }}
+          >
+            <Button className={classes.button} variant="subtle">
+              <IconSquareRoundedPlus />
+            </Button>
+          </Tooltip>
         </div>
       </div>
     </div>
@@ -136,11 +183,12 @@ const useStyles = createStyles({
   image_wrapper: {
     display: "flex",
     justifyContent: "center",
-    overflow: "hidden",
+    backgroundColor: "#E8DED1",
   },
   image: {
     objectFit: "scale-down",
     maxHeight: rem(500),
+    // maxWidth: rem(760),
   },
   action_wrapper: {
     display: "flex",
