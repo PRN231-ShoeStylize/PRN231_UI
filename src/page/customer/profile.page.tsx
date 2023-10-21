@@ -16,19 +16,21 @@ import {
   IconPhoto,
   IconSettings,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PostCard, { PostCardType } from "../../components/card/PostCard";
 import { useGetPostByUserId } from "../../hooks/useGetPostByUserId";
 import { TOKEN } from "../../constants/constants";
 import jwtDecode from "jwt-decode";
-import { decode } from "../../utils/jwt";
+import { decode, isTokenValid } from "../../utils/jwt";
 import { GetPostResult } from "../../api/post/post.model";
+import { useNavigate } from "react-router";
 
 const ProfilePage = () => {
   const { classes } = useStyles();
+  const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
   const { data, isLoading } = useGetPostByUserId(
-    +decode(sessionStorage.getItem(TOKEN)!)[
+    +decode(isTokenValid() ?? "")[
       "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
     ]
   );

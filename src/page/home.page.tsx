@@ -27,7 +27,7 @@ export const HomePage: React.FC = (): React.ReactElement => {
     return <Loader />;
   }
   return (
-    <>
+    <div>
       {data?.map((item, index) => (
         <div key={index} className={classes.post_wrapper}>
           <PostCard
@@ -40,7 +40,7 @@ export const HomePage: React.FC = (): React.ReactElement => {
           />
         </div>
       ))}
-    </>
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useRoutes } from "react-router-dom";
+import { useNavigate, useRoutes } from "react-router-dom";
 import LoginPage from "../page/login.page";
 import RegisterPage from "../page/register.page";
 import MainHeader from "../components/header/MainHeader";
@@ -9,6 +9,8 @@ import CreatePostPage from "../page/customer/createPost.page";
 import HomeLayout from "../layouts/home.layout";
 import ProfilePage from "../page/customer/profile.page";
 import CreateOrderPage from "../page/customer/createOrder.page";
+import { isTokenValid } from "../utils/jwt";
+import { useEffect } from "react";
 
 const CommonRoute = () => {
   let element = useRoutes([
