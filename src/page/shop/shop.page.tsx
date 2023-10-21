@@ -23,7 +23,6 @@ import { GetPostResult, IPost } from "../../api/post/post.model";
 import { Carousel } from "@mantine/carousel";
 import { CreateProposalParams } from "../../api/proposal/proposal.model";
 import { ProposalAPI } from "../../api/proposal/proposal.api";
-import { IMAGE_MIME_TYPE, Dropzone, FileWithPath } from "@mantine/dropzone";
 import { uploadImage } from "../../utils/firebase";
 
 const ShopHomePage: React.FC = () => {
@@ -52,8 +51,13 @@ const ShopHomePage: React.FC = () => {
       const res = await PostAPI.getAllPost();
       return res;
     };
-    getAllPost().then((res) => setPosts(res.data));
+    
+    getAllPost().then((res) => {
+        setPosts(res)
+        console.log(res)
+    });
   }, []);
+
   const handleSubmit = async (params: CreateProposalParams) => {
     var urls: string[] = [];
     await Promise.all(
@@ -98,11 +102,7 @@ const ShopHomePage: React.FC = () => {
 
   return (
     <>
-      <MainHeader />
       <Grid>
-        <Grid.Col span={1}>
-          <MainNavbar items={mockdata} />
-        </Grid.Col>
         <Grid.Col span={11}>
           {posts.map((post) => (
             <ProposalCard
