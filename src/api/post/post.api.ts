@@ -1,8 +1,9 @@
+import { AxiosResponse } from "axios";
 import { httpClient } from "../../utils/http-client";
 import { CreatePostParams, GetPostResult } from "./post.model";
 
 export const PostAPI = {
-  getAllPost: async () => {
+  getAllPost: async () : Promise<GetPostResult[]> => {
     const res = await httpClient.get<GetPostResult[]>(`/Post`);
     return res.data;
   },

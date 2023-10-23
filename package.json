@@ -8,7 +8,7 @@
     "@hookform/resolvers": "3.1.1",
     "@mantine/carousel": "6.0.16",
     "@mantine/core": "6.0.16",
-    "@mantine/dropzone": "^6.0.20",
+    "@mantine/dropzone": "6.0.16",
     "@mantine/hooks": "6.0.16",
     "@mantine/modals": "6.0.16",
     "@mantine/notifications": "6.0.16",

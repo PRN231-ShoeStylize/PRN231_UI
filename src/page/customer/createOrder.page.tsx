@@ -10,7 +10,6 @@ import {
   Image,
   NumberInput,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
 import { useFormik, FormikProvider } from "formik";
 import { Carousel } from "@mantine/carousel";
 import { useParams } from "react-router";
