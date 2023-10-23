@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStyles, Header, Autocomplete, Group, Burger, rem } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import {MagnifyingGlassIcon, UserCircleIcon} from "@heroicons/react/24/outline";
+import {MagnifyingGlassIcon} from "@heroicons/react/24/outline";
 import LogoComponent from "../components/logo.component";
 
 const HeaderLayout: React.FC = (): React.ReactElement => {

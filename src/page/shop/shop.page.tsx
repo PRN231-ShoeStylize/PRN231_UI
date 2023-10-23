@@ -29,6 +29,7 @@ const ShopHomePage: React.FC = () => {
   const mockdata: IMainNavBarProp[] = [{ icon: IconHome2, label: "Home", href: '' }];
 
   const [posts, setPosts] = useState<GetPostResult[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [displayedImages, setDisplayedImages] = useState<string[]>([]);
   const [selectedPostId, setSelectedPostId] = useState<number>(-1)
   const [files, setFiles] = useState<File[]>([]);
@@ -42,7 +43,6 @@ const ShopHomePage: React.FC = () => {
       price: 100,
       submissionResources: [],
     },
-
     onSubmit: (values) => handleSubmit(values),
   });
 
@@ -58,7 +58,9 @@ const ShopHomePage: React.FC = () => {
     });
   }, []);
 
+
   const handleSubmit = async (params: CreateProposalParams) => {
+    setIsLoading(true)
     var urls: string[] = [];
     await Promise.all(
       files?.map(async (file: File) => {
@@ -88,6 +90,8 @@ const ShopHomePage: React.FC = () => {
         // classNames: classes,
       });
     }
+    setIsLoading(false)
+    close()
   };
 
   const handleDisplayImage = (links: string[]) => {
@@ -98,6 +102,12 @@ const ShopHomePage: React.FC = () => {
   const handleOpenSubmitModal = (postId: number) => {
     setSelectedPostId(postId)
     open()
+  }
+
+  const handleCloseSubmitModal = () => {
+    close()
+    formik.resetForm()
+    setFiles([])
   }
 
   return (
@@ -115,7 +125,7 @@ const ShopHomePage: React.FC = () => {
       </Grid>
       <Modal
         opened={opened}
-        onClose={close}
+        onClose={handleCloseSubmitModal}
         title={<h2>Create Proposal</h2>}
         centered
       >
@@ -143,6 +153,7 @@ const ShopHomePage: React.FC = () => {
           />
           <Button
             onClick={() => formik.handleSubmit()}
+            loading = {isLoading}
             style={{ color: "white" }}
             fullWidth
             mt="md"
