@@ -14,7 +14,7 @@ import ProviderLayout from "../layouts/provider.layout";
 const CommonRoute = () => {
   let element = useRoutes([
     {
-      path: "*",
+      path: "",
       element: <LoginPage />,
       index: true,
     },
@@ -23,14 +23,13 @@ const CommonRoute = () => {
       element: <HomeLayout />,
       children: [
         {
-          path: "",
+          path: "/customer",
           element: <HomePage />,
         },
-
-        {
-          path: "/header",
-          element: <MainHeader />,
-        },
+        // {
+        //   path: "/header",
+        //   element: <MainHeader />,
+        // },
         {
           path: "/chat",
           element: <ChatPage />,

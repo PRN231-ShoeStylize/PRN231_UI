@@ -31,7 +31,7 @@ export type PostCardProps = {
   location: string;
   description: string;
   images: FileWithPath[] | string[];
-  postType: PostCardType;
+  postType?: PostCardType;
 };
 
 const PostCard = ({
