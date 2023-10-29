@@ -7,8 +7,8 @@ export interface CreateProposalParams {
   submissionResources: string[];
 }
 
-export type GetProposalParams = {
-  status?: OrderStatus;
+export interface GetProposalParams {
+  status?: string;
   createdById?: number;
   postId?: number;
   sortCreatedAt?: string;
@@ -38,3 +38,27 @@ export type GetProposalListResult = {
   totalRecord: number;
   totalPage: number;
 };
+export interface GetProposalResponse {
+  results: IProposal[]
+ }
+
+export enum ProposalStatus {
+ Accepted = "Accepted",
+ Rejected = "Rejected",
+ Done = "Done",
+ Pending = "Pending",
+}
+
+export interface IProposal {
+   id: number
+   createdById: number,
+   createdByFirstName: string,
+   createdByLastName: string,
+   description: string,
+   orderId: number,
+   postId: number,
+   price: number,
+   status: ProposalStatus,
+   createdAt: string,
+   submissionResources: string[]
+}

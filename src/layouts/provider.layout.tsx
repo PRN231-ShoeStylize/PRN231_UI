@@ -16,9 +16,8 @@ const ProviderLayout: React.FC = () => {
   };
 
   const mockdata: IMainNavBarProp[] = [
-    { icon: IconHome2, label: "Home", href: "/" },
-    { icon: IconDeviceIpadPlus, label: "Create new post", href: "/create" },
-    { icon: iconAvatar, label: "Profile", href: "/profile" },
+    { icon: IconHome2, label: "View available posts", href: "/provider" },
+    { icon: IconDeviceIpadPlus, label: "Proposals history", href: "/provider/proposal" },
   ];
 
   return (
