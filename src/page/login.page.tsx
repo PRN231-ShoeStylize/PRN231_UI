@@ -34,7 +34,12 @@ const LoginPage: React.FC = (): React.ReactElement => {
         onSuccess(data, variables, context) {
           sessionStorage.clear();
           sessionStorage.setItem(TOKEN, data.token);
-          navigate("/");
+          if (data.role === "Provider") {
+            navigate("/provider");
+          }
+          if (data.role === "Customer") {
+            navigate("/customer");
+          }
         },
         onError(error, variables, context) {
           console.log(error);

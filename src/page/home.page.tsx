@@ -3,22 +3,6 @@ import { Grid, Loader, createStyles, rem } from "@mantine/core";
 import { useGetAllPost } from "../hooks/useGetAllPost";
 import PostCard, { PostCardType } from "../components/card/PostCard";
 
-const COIN_CARDS = [
-  {
-    image: "/coin-logos/doge-icon.svg",
-    name: "Doge coin",
-    date: "1/1/2021",
-  },
-  {
-    image: "/coin-logos/bitcoin-icon.svg",
-    name: "Bitcoin",
-    date: "1/1/2010",
-  },
-] as {
-  image: string;
-  name: string;
-  date: string;
-}[];
 export const HomePage: React.FC = (): React.ReactElement => {
   const { data, isError, isLoading } = useGetAllPost();
   const { classes } = useStyles();
