@@ -15,7 +15,7 @@ const ProposalPage: React.FC = () => {
   useEffect(() => {
     const getAllPost = async () => {
       const res = await ProposalAPI._getProposal({
-        status: proposalStatus == null ? undefined : proposalStatus,
+        status: proposalStatus == null ? undefined : proposalStatus, isOfCurrentUser: true
       });
       return res;
     };
