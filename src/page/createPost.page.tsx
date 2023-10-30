@@ -10,7 +10,7 @@ import {
   SimpleGrid,
   ActionIcon,
 } from "@mantine/core";
-import PostCard from "../components/card/PostCard";
+import PostCard, { PostCardType } from "../components/card/PostCard";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useState } from "react";
@@ -18,6 +18,7 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { uploadImage } from "../utils/firebase";
 import { useCreatePost } from "../hooks/useCreatePost";
 import { useNavigate } from "react-router";
+import { decode, isTokenValid } from "../utils/jwt";
 
 type Inputs = {
   content: any;
@@ -38,7 +39,6 @@ const CreatePostPage = () => {
   const [files, setFiles] = useState<FileWithPath[]>([]);
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     var urls: string[] = [];
-    console.log(files[0]);
 
     await Promise.all(
       files?.map(async (item: FileWithPath) => {
@@ -67,7 +67,6 @@ const CreatePostPage = () => {
 
   const previews = files.map((file, index) => {
     const imageUrl = URL.createObjectURL(file);
-    console.log(imageUrl);
 
     return (
       <Image
@@ -87,9 +86,13 @@ const CreatePostPage = () => {
           <PostCard
             description={watch("content")}
             images={files}
-            avatar="https://cdn.dribbble.com/userupload/10064008/file/original-ed9f97edacf253ce306dbca6adbbb5ff.png?resize=752x752"
             location="Caizo, egypt"
-            name="imozix"
+            postType={PostCardType.DEMO}
+            ownerId={
+              +decode(isTokenValid() ?? "")[
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+              ]
+            }
           />
         </div>
         <div className={classes.form_wrapper}>

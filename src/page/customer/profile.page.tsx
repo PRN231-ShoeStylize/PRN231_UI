@@ -1,70 +1,182 @@
-import { Carousel, Embla, useAnimationOffsetEffect } from "@mantine/carousel";
 import {
   Avatar,
-  Divider,
+  Button,
   Grid,
   Image,
-  Modal,
+  NumberInput,
+  Select,
+  Table,
   Tabs,
-  Tooltip,
+  Textarea,
   createStyles,
   rem,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import {
+  IconExclamationCircle,
   IconMessageCircle,
   IconPhoto,
-  IconSettings,
+  IconReceipt,
+  IconX,
 } from "@tabler/icons-react";
-import React, { useState } from "react";
-import PostCard, { PostCardType } from "../../components/card/PostCard";
+import { useEffect, useState } from "react";
 import { useGetPostByUserId } from "../../hooks/useGetPostByUserId";
-import { TOKEN } from "../../constants/constants";
-import jwtDecode from "jwt-decode";
-import { decode } from "../../utils/jwt";
+import { decode, isTokenValid } from "../../utils/jwt";
 import { GetPostResult } from "../../api/post/post.model";
+import { useLocation, useNavigate } from "react-router";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { DateInput, DateInputProps } from "@mantine/dates";
+import { useGetUserByToken } from "../../hooks/useGetUserById";
+import { setInitForm } from "../../utils/form";
+import { GetUserResult, UpdateProfileParams } from "../../api/user/user.model";
+import { useGetOrderByToken } from "../../hooks/useGetOrder";
+import { GetOrderResult } from "../../api/order/order.modal";
+import dayjs from "dayjs";
+import { useUpdateUserProfile } from "../../hooks/useUpdateUserProfile";
+import { notifications } from "@mantine/notifications";
 
 const ProfilePage = () => {
   const { classes } = useStyles();
-  const [opened, { open, close }] = useDisclosure(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   const { data, isLoading } = useGetPostByUserId(
-    +decode(sessionStorage.getItem(TOKEN)!)[
+    +decode(isTokenValid() ?? "")[
       "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
     ]
   );
+  const { data: userData, isLoading: isUserLoading } = useGetUserByToken();
+  const { data: orderData } = useGetOrderByToken();
+
+  const { mutate, isLoading: updateUserLoading } = useUpdateUserProfile();
+  // const [opened, { open, close }] = useDisclosure(false);
+  const form = useForm<UpdateProfileParams>({ shouldUnregister: false });
+
+  useEffect(() => {
+    if (userData) {
+      const { birthday, firstname, shoeSize, lastname, phonenumber, gender } =
+        userData;
+      // setInitForm<UpdateProfileParams, keyof UpdateProfileParams>(
+      //   {
+      //     birthday: new Date(birthday),
+      //     firstname,
+      //     shoeSize,
+      //     lastname,
+      //     phonenumber,
+      //     gender,
+      //   },
+      //   [
+      //     "firstname",
+      //     "shoeSize",
+      //     "birthday",
+      //     "lastname",
+      //     "phonenumber",
+      //     "gender",
+      //   ],
+      //   form.setValue
+      // );
+
+      form.reset({
+        birthday: dayjs(birthday).format("MMMM D, YYYY") as any,
+        firstname,
+        gender,
+        lastname,
+        phonenumber,
+        shoeSize,
+      });
+    }
+  }, [userData, location.key]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    getValues,
+    watch,
+    setValue,
+  } = form;
+
+  const onSubmit: SubmitHandler<UpdateProfileParams> = async (data) => {
+    mutate(data, {
+      onSuccess(data, variables, context) {
+        notifications.show({
+          title: "Success",
+          message: "Your profile is updated! 🤥",
+          color: "green",
+          icon: <IconX />,
+        });
+      },
+      onError(error, variables, context) {
+        notifications.show({
+          title: "Update failed",
+          message: "Something wrong with your profile! 🤥",
+          color: "red",
+          icon: <IconExclamationCircle />,
+        });
+        console.log(error);
+      },
+    });
+  };
 
   const renderImageGallery = (tooltip: string, posts: GetPostResult[]) => {
     return posts?.map((item, index) => (
       <Grid.Col span={2} key={index}>
-        <Tooltip label={tooltip}>
-          {item.postResources ? (
-            <Carousel maw={320}>
-              {item.postResources?.map((url, i) => (
-                <Carousel.Slide key={i}>
-                  <Image
-                    onClick={open}
-                    className={classes.image}
-                    radius={"md"}
-                    src={url}
-                  />
-                </Carousel.Slide>
-              ))}
-            </Carousel>
-          ) : (
-            <p>{item.content}</p>
-          )}
-        </Tooltip>
+        {item.postResources ? (
+          <Image
+            height={200}
+            onClick={() => navigate(`/post/${item.id}`)}
+            className={classes.image}
+            radius={"md"}
+            src={item?.postResources?.[0]}
+            fit="cover"
+          />
+        ) : (
+          <p>{item.content}</p>
+        )}
       </Grid.Col>
     ));
   };
 
-  const renderProposalList = () => {
-    return [1, 2, 3, 4].map((item, index) => <></>);
+  const renderOrderTable = (data: GetOrderResult[]) => {
+    const rows = data?.map((element, index) => (
+      <tr key={element?.id}>
+        <td>{index + 1}</td>
+        <td>{element?.proposal?.post?.content}</td>
+        <td>{element?.proposal?.description}</td>
+        <td>
+          {element?.proposal?.createdByFirstName +
+            " " +
+            element?.proposal?.createdByLastName}
+        </td>
+        <td>{element?.price}</td>
+        <td>{element?.address}</td>
+        <td>{dayjs(element?.createdAt)?.format("DD/MM/YYYY")}</td>
+        <td>{element?.paymentMethod}</td>
+        <td>{element?.status}</td>
+      </tr>
+    ));
+
+    return (
+      <Table>
+        <thead>
+          <tr>
+            <th>Number</th>
+            <th>Post content</th>
+            <th>Order description</th>
+            <th>Provider</th>
+            <th>Price</th>
+            <th>Address</th>
+            <th>Created time</th>
+            <th>Payment</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </Table>
+    );
   };
 
   return (
     <div>
-      <Modal size={1000} opened={opened} onClose={close}>
+      {/* <Modal size={1000} opened={opened} onClose={close}>
         <PostCard
           description={"discription"}
           images={[
@@ -78,7 +190,7 @@ const ProfilePage = () => {
           name="imozix"
           postType={PostCardType.POST}
         />
-      </Modal>
+      </Modal> */}
 
       <div className={classes.avatar_wrapper}>
         <Avatar
@@ -93,20 +205,93 @@ const ProfilePage = () => {
           <Tabs.Tab value="gallery" icon={<IconPhoto size="0.8rem" />}>
             Gallery
           </Tabs.Tab>
+          <Tabs.Tab value="Order" icon={<IconReceipt size="0.8rem" />}>
+            Order
+          </Tabs.Tab>
           <Tabs.Tab value="messages" icon={<IconMessageCircle size="0.8rem" />}>
-            Messages
+            Profile
           </Tabs.Tab>
         </Tabs.List>
 
         <Tabs.Panel value="gallery" pt="xs">
           <Grid>{renderImageGallery("Proposal list", data ?? [])}</Grid>
-          <p className={classes.title}>Active proposal</p>
-          <Divider my="sm" />
-          {/* <Grid>{renderImageGallery("Proposal list")}</Grid> */}
+        </Tabs.Panel>
+
+        <Tabs.Panel value="Order" pt="xs">
+          <div>{renderOrderTable(orderData ?? [])}</div>
         </Tabs.Panel>
 
         <Tabs.Panel value="messages" pt="xs">
-          Messages tab content
+          <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+            <Textarea
+              className={classes.text_input}
+              placeholder="FirstName"
+              label="FirstName"
+              // className={classes.text_input}
+              autosize
+              minRows={1}
+              error={errors.firstname?.message as String}
+              {...register("firstname", { required: "This is required" })}
+            />
+            <Textarea
+              className={classes.text_input}
+              placeholder="LastName"
+              label="LastName"
+              // className={classes.text_input}
+              autosize
+              minRows={1}
+              error={errors.lastname?.message as String}
+              {...register("lastname", { required: "This is required" })}
+            />
+            <Textarea
+              className={classes.text_input}
+              placeholder="PhomeNumber"
+              label="PhomeNumber"
+              // className={classes.text_input}
+              autosize
+              minRows={1}
+              error={errors.phonenumber?.message as String}
+              {...register("phonenumber", { required: "This is required" })}
+            />
+            <DateInput
+              className={classes.text_input}
+              placeholder="Birthday"
+              label="Birthday"
+              error={errors.birthday?.message as String}
+              {...register("birthday", {
+                required: "This is required",
+              })}
+              defaultValue={null}
+              onChange={(data: Date) => {
+                setValue("birthday", data);
+              }}
+            />
+            <NumberInput
+              className={classes.text_input}
+              placeholder="Shoe size"
+              label="Shoe size"
+              {...register("shoeSize", { required: "This is required" })}
+              defaultValue={getValues("shoeSize")}
+              onChange={(data: number) => setValue("shoeSize", data)}
+              min={33}
+              max={43}
+            />
+            <Select
+              className={classes.text_input}
+              label="Gender"
+              placeholder="Pick one"
+              data={[
+                { value: "Male", label: "Male" },
+                { value: "Female", label: "Female" },
+              ]}
+              {...register("gender", { required: "This is required" })}
+              defaultValue={getValues("gender")}
+              onChange={(data: string) => setValue("gender", data)}
+            />
+            <Button type="submit" className={classes.button}>
+              Update
+            </Button>
+          </form>
         </Tabs.Panel>
       </Tabs>
     </div>
@@ -137,6 +322,19 @@ const useStyles = createStyles({
     fontWeight: 600,
     marginTop: rem(32),
     marginBottom: rem(16),
+  },
+  form: {
+    marginTop: rem(12),
+    marginBottom: rem(32),
+    marginRight: `${rem(32)}`,
+    display: "flex",
+    flexDirection: "column",
+  },
+  text_input: {
+    marginBottom: rem(20),
+  },
+  button: {
+    alignSelf: "flex-start",
   },
 });
 

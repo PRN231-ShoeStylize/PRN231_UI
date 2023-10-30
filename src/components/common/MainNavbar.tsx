@@ -73,7 +73,7 @@ const MainNavbar: React.FC<IMainNavBarProps> = ({ items }) => {
   const handleLogout = () => {
     sessionStorage.clear();
     localStorage.clear();
-    navigate("/login");
+    navigate("/login", {});
   };
 
   const links = items.map((link, index) => (

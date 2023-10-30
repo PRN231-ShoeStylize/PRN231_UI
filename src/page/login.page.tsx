@@ -32,14 +32,14 @@ const LoginPage: React.FC = (): React.ReactElement => {
       { email: username, password },
       {
         onSuccess(data, variables, context) {
+          sessionStorage.clear();
           sessionStorage.setItem(TOKEN, data.token);
-          if(data.role === "Provider"){
+          if (data.role === "Provider") {
             navigate("/provider");
           }
-          if(data.role === "Customer"){
-            navigate("/customer");
+          if (data.role === "Customer") {
+            navigate("/profile");
           }
-         
         },
         onError(error, variables, context) {
           console.log(error);

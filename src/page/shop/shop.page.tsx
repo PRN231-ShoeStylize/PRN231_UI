@@ -20,21 +20,27 @@ import { FormikProvider, useFormik } from "formik";
 import { showNotification } from "@mantine/notifications";
 import { PostAPI } from "../../api/post/post.api";
 import { GetPostResult, IPost } from "../../api/post/post.model";
-import { Carousel } from "@mantine/carousel";
+import { Carousel, Embla, useAnimationOffsetEffect } from "@mantine/carousel";
 import { CreateProposalParams } from "../../api/proposal/proposal.model";
 import { ProposalAPI } from "../../api/proposal/proposal.api";
 import { uploadImage } from "../../utils/firebase";
 
 const ShopHomePage: React.FC = () => {
-  const mockdata: IMainNavBarProp[] = [{ icon: IconHome2, label: "Home", href: '' }];
+  const mockdata: IMainNavBarProp[] = [
+    { icon: IconHome2, label: "Home", href: "" },
+  ];
 
   const [posts, setPosts] = useState<GetPostResult[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [displayedImages, setDisplayedImages] = useState<string[]>([]);
-  const [selectedPostId, setSelectedPostId] = useState<number>(-1)
+  const [selectedPostId, setSelectedPostId] = useState<number>(-1);
   const [files, setFiles] = useState<File[]>([]);
   const [opened, { open, close }] = useDisclosure();
   const [imageOpend, openImageController] = useDisclosure();
+
+  const TRANSITION_DURATION = 200;
+  const [embla, setEmbla] = useState<Embla | null>(null);
+  useAnimationOffsetEffect(embla, TRANSITION_DURATION);
 
   const formik = useFormik({
     initialValues: {
@@ -51,28 +57,27 @@ const ShopHomePage: React.FC = () => {
       const res = await PostAPI.getAllPost();
       return res;
     };
-    
+
     getAllPost().then((res) => {
-        setPosts(res)
-        console.log(res)
+      setPosts(res);
+      console.log(res);
     });
   }, []);
 
-
   const handleSubmit = async (params: CreateProposalParams) => {
-    setIsLoading(true)
+    setIsLoading(true);
     var urls: string[] = [];
     await Promise.all(
       files?.map(async (file: File) => {
         var url = await uploadImage(file);
 
         if (url) {
-            urls.push(url)
+          urls.push(url);
         }
       })
     );
-    params.submissionResources = urls
-    params.postId = selectedPostId
+    params.submissionResources = urls;
+    params.postId = selectedPostId;
     debugger;
     const result = await ProposalAPI._createProposal(params);
     if (result) {
@@ -90,8 +95,8 @@ const ShopHomePage: React.FC = () => {
         // classNames: classes,
       });
     }
-    setIsLoading(false)
-    close()
+    setIsLoading(false);
+    close();
   };
 
   const handleDisplayImage = (links: string[]) => {
@@ -100,15 +105,15 @@ const ShopHomePage: React.FC = () => {
   };
 
   const handleOpenSubmitModal = (postId: number) => {
-    setSelectedPostId(postId)
-    open()
-  }
+    setSelectedPostId(postId);
+    open();
+  };
 
   const handleCloseSubmitModal = () => {
-    close()
-    formik.resetForm()
-    setFiles([])
-  }
+    close();
+    formik.resetForm();
+    setFiles([]);
+  };
 
   return (
     <>
@@ -153,7 +158,7 @@ const ShopHomePage: React.FC = () => {
           />
           <Button
             onClick={() => formik.handleSubmit()}
-            loading = {isLoading}
+            loading={isLoading}
             style={{ color: "white" }}
             fullWidth
             mt="md"
@@ -163,9 +168,14 @@ const ShopHomePage: React.FC = () => {
           </Button>
         </FormikProvider>
       </Modal>
-      <Modal opened={imageOpend} onClose={openImageController.close}>
+      <Modal
+        opened={imageOpend}
+        onClose={openImageController.close}
+        // size={1000}
+      >
         <div style={{ height: 500, display: "flex" }}>
           <Carousel
+            getEmblaApi={setEmbla}
             withIndicators
             height="100%"
             style={{ flex: 1 }}

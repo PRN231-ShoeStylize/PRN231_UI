@@ -8,6 +8,7 @@
     "@hookform/resolvers": "3.1.1",
     "@mantine/carousel": "6.0.16",
     "@mantine/core": "6.0.16",
+    "@mantine/dates": "^6.0.16",
     "@mantine/dropzone": "6.0.16",
     "@mantine/hooks": "6.0.16",
     "@mantine/modals": "6.0.16",
@@ -21,10 +22,12 @@
     "@types/react": "18.2.15",
     "@types/react-dom": "18.2.7",
     "axios": "^1.5.0",
+    "dayjs": "^1.11.10",
     "embla-carousel-react": "7.1.0",
     "firebase": "^10.5.0",
     "formik": "2.4.2",
     "jwt-decode": "^3.1.2",
+    "lodash": "^4.17.21",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "7.45.2",
@@ -64,6 +67,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.200",
     "@types/uuid": "^9.0.5",
     "@types/web3": "1.2.2"
   }

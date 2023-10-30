@@ -14,6 +14,7 @@ import {
 } from "@tabler/icons-react";
 import { FileWithPath } from "@mantine/dropzone";
 import { Carousel, Embla, useAnimationOffsetEffect } from "@mantine/carousel";
+import { useGetUserById } from "../../hooks/useGetUserById";
 
 function isFileWithPath(pet: FileWithPath | string): pet is FileWithPath {
   return (pet as FileWithPath).path !== undefined;
@@ -26,26 +27,26 @@ export enum PostCardType {
 }
 
 export type PostCardProps = {
-  avatar: string;
-  name: string;
   location: string;
   description: string;
   images: FileWithPath[] | string[];
-  postType?: PostCardType;
+  postType: PostCardType;
+  ownerId: number;
 };
 
 const PostCard = ({
-  avatar,
   description,
   images,
   location,
-  name,
   postType,
+  ownerId,
 }: PostCardProps) => {
   const [data, setData] = useState<{
     chatToolTip: string;
     createToolTip: string;
   }>({ chatToolTip: "Demo", createToolTip: "Demo" });
+
+  const { data: userData } = useGetUserById(ownerId);
 
   useEffect(() => {
     switch (postType) {
@@ -65,8 +66,8 @@ const PostCard = ({
     }
   }, []);
 
-  const TRANSITION_DURATION = 200;
   const { classes } = useStyles();
+  const TRANSITION_DURATION = 200;
   const [embla, setEmbla] = useState<Embla | null>(null);
   useAnimationOffsetEffect(embla, TRANSITION_DURATION);
 
@@ -96,10 +97,12 @@ const PostCard = ({
           size={rem(48)}
           className={classes.avatar}
           radius={rem(999)}
-          src={avatar}
+          src={userData?.avatarUrl ?? ""}
         />
         <div className={classes.name_wrapper}>
-          <p className={classes.name}>{name}</p>
+          <p className={classes.name}>
+            {userData?.firstname + " " + userData?.lastname}
+          </p>
           <p className={classes.location}>{location}</p>
         </div>
         <IconDots className={classes.header_icon} />

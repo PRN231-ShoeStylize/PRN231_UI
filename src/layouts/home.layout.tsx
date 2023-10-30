@@ -4,7 +4,11 @@ import { Outlet } from "react-router";
 import { Grid, Avatar } from "@mantine/core";
 import MainNavbar from "../components/common/MainNavbar";
 import { IMainNavBarProp } from "../components/common/navbar.model";
-import { IconHome2, IconDeviceIpadPlus } from "@tabler/icons-react";
+import {
+  IconHome2,
+  IconDeviceIpadPlus,
+  IconMessage2,
+} from "@tabler/icons-react";
 
 const HomeLayout = () => {
   const iconAvatar = () => {
@@ -17,9 +21,10 @@ const HomeLayout = () => {
   };
 
   const mockdata: IMainNavBarProp[] = [
-    { icon: IconHome2, label: "Home", href: "/" },
-    { icon: IconDeviceIpadPlus, label: "Create new post", href: "/create" },
+    // { icon: IconHome2, label: "Home", href: "/" },
     { icon: iconAvatar, label: "Profile", href: "/profile" },
+    { icon: IconMessage2, label: "Chat", href: "/chat" },
+    { icon: IconDeviceIpadPlus, label: "Create new post", href: "/create" },
   ];
 
   return (

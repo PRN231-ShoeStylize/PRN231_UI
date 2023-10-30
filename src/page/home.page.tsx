@@ -11,20 +11,19 @@ export const HomePage: React.FC = (): React.ReactElement => {
     return <Loader />;
   }
   return (
-    <>
+    <div>
       {data?.map((item, index) => (
         <div key={index} className={classes.post_wrapper}>
           <PostCard
             description={item.content}
             images={item.postResources}
-            avatar="https://cdn.dribbble.com/userupload/10064008/file/original-ed9f97edacf253ce306dbca6adbbb5ff.png?resize=752x752"
             location="Caizo, egypt"
-            name="imozix"
             postType={PostCardType.PROPOSAL}
+            ownerId={item?.onwerId}
           />
         </div>
       ))}
-    </>
+    </div>
   );
 };
 

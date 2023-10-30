@@ -1,7 +1,5 @@
-import React from "react";
 import {
   TextInput,
-  Checkbox,
   Button,
   Group,
   createStyles,
@@ -63,7 +61,7 @@ const CreateOrderPage = () => {
             className={classes.input}
             label="Price"
             placeholder="Total price"
-            value={formik.values.price}
+            // value={formik.values.price}
             onChange={(value) => formik.setFieldValue("price", value)}
           />
           <TextInput

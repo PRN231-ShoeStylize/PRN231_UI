@@ -1,10 +1,15 @@
 import { AxiosResponse } from "axios";
 import { httpClient } from "../../utils/http-client";
 import { CreatePostParams, GetPostResult } from "./post.model";
+import { TOKEN } from "../../constants/constants";
 
 export const PostAPI = {
-  getAllPost: async () : Promise<GetPostResult[]> => {
-    const res = await httpClient.get<GetPostResult[]>(`/Post`);
+  getAllPost: async (): Promise<GetPostResult[]> => {
+    const res = await httpClient.get<GetPostResult[]>(`/Post`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem(TOKEN)}`,
+      },
+    });
     return res.data;
   },
   createPost: async (params: CreatePostParams) => {
@@ -13,6 +18,10 @@ export const PostAPI = {
   },
   getPostByUserId: async (userId: number) => {
     const res = await httpClient.get<GetPostResult[]>(`/Post/user/${userId}`);
+    return res.data;
+  },
+  getPostByPostId: async (postId: number) => {
+    const res = await httpClient.get<GetPostResult>(`/Post/${postId}`);
     return res.data;
   },
 };

@@ -1,4 +1,4 @@
-import { useRoutes } from "react-router-dom";
+import { useNavigate, useRoutes } from "react-router-dom";
 import LoginPage from "../page/login.page";
 import RegisterPage from "../page/register.page";
 import MainHeader from "../components/header/MainHeader";
@@ -9,7 +9,9 @@ import CreatePostPage from "../page/customer/createPost.page";
 import HomeLayout from "../layouts/home.layout";
 import ProfilePage from "../page/customer/profile.page";
 import CreateOrderPage from "../page/customer/createOrder.page";
+
 import ProviderLayout from "../layouts/provider.layout";
+import PostDetailPage from "../page/customer/postDetail.page";
 
 const CommonRoute = () => {
   let element = useRoutes([
@@ -26,10 +28,6 @@ const CommonRoute = () => {
           path: "/customer",
           element: <HomePage />,
         },
-        // {
-        //   path: "/header",
-        //   element: <MainHeader />,
-        // },
         {
           path: "/chat",
           element: <ChatPage />,
@@ -37,22 +35,27 @@ const CommonRoute = () => {
         {
           path: "/profile",
           element: <ProfilePage />,
+          index: true,
         },
         {
           path: "/create-order/:id",
           element: <CreateOrderPage />,
         },
+        {
+          path: "/post/:id",
+          element: <PostDetailPage />,
+        },
       ],
     },
     {
       path: "/provider",
-      element: <ProviderLayout/>,
+      element: <ProviderLayout />,
       children: [
         {
           path: "",
-          element: <ShopHomePage/>
-        }
-      ]
+          element: <ShopHomePage />,
+        },
+      ],
     },
     {
       path: "/register",
@@ -65,6 +68,10 @@ const CommonRoute = () => {
     {
       path: "/create",
       element: <CreatePostPage />,
+    },
+    {
+      path: "/chat",
+      element: <ChatPage />,
     },
   ]);
 
