@@ -2,7 +2,6 @@ import {
   Button,
   createStyles,
   rem,
-  useMantineTheme,
   Text,
   Divider,
   Textarea,
@@ -18,6 +17,7 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { uploadImage } from "../../utils/firebase";
 import { useCreatePost } from "../../hooks/useCreatePost";
 import { useNavigate } from "react-router";
+import { decode, isTokenValid } from "../../utils/jwt";
 
 type Inputs = {
   content: any;
@@ -92,10 +92,13 @@ const CreatePostPage = () => {
           <PostCard
             description={watch("content")}
             images={files}
-            avatar="https://cdn.dribbble.com/userupload/10064008/file/original-ed9f97edacf253ce306dbca6adbbb5ff.png?resize=752x752"
             location="Caizo, egypt"
-            name="imozix"
             postType={PostCardType.DEMO}
+            ownerId={
+              +decode(isTokenValid() ?? "")[
+                "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+              ]
+            }
           />
         </div>
         <div className={classes.form_wrapper}>

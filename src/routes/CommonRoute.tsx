@@ -11,6 +11,7 @@ import ProfilePage from "../page/customer/profile.page";
 import CreateOrderPage from "../page/customer/createOrder.page";
 
 import ProviderLayout from "../layouts/provider.layout";
+import PostDetailPage from "../page/customer/postDetail.page";
 
 const CommonRoute = () => {
   let element = useRoutes([
@@ -32,10 +33,7 @@ const CommonRoute = () => {
           path: "/header",
           element: <MainHeader />,
         },
-        {
-          path: "/chat",
-          element: <ChatPage />,
-        },
+
         {
           path: "/profile",
           element: <ProfilePage />,
@@ -43,6 +41,10 @@ const CommonRoute = () => {
         {
           path: "/create-order/:id",
           element: <CreateOrderPage />,
+        },
+        {
+          path: "/post/:id",
+          element: <PostDetailPage />,
         },
       ],
     },
@@ -67,6 +69,10 @@ const CommonRoute = () => {
     {
       path: "/create",
       element: <CreatePostPage />,
+    },
+    {
+      path: "/chat",
+      element: <ChatPage />,
     },
   ]);
 

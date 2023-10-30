@@ -2,7 +2,6 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { TOKEN_HAS_EXPIRED } from "../constants/constants";
 import { TOKEN } from "../constants/constants";
 
-
 const _getConfig = (config?: AxiosRequestConfig) => {
   return {
     ...config,
@@ -88,3 +87,15 @@ axios.interceptors.response.use(
     }
   }
 );
+
+export const toQueryParams = (data: any): string => {
+  const qs = Object.keys(data)
+    .map((key) =>
+      Array.isArray(data[key])
+        ? data[key].map((v: string) => `${key}=${v}`).join("&")
+        : `${key}=${data[key]}`
+    )
+    .join("&");
+
+  return qs;
+};

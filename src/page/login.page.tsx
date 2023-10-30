@@ -32,7 +32,8 @@ const LoginPage: React.FC = (): React.ReactElement => {
       { email: username, password },
       {
         onSuccess(data, variables, context) {
-          sessionStorage.setItem(TOKEN, data);
+          sessionStorage.clear();
+          sessionStorage.setItem(TOKEN, data.token);
           navigate("/");
         },
         onError(error, variables, context) {

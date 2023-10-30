@@ -1,12 +1,12 @@
 import { useMutation } from "react-query";
-import { CreateOrderParams } from "../api/post/propalsal.modal";
-import { ProposalAPI } from "../api/post/proposal.api";
+import { OrderAPI } from "../api/order/order.api";
+import { CreateOrderParams } from "../api/order/order.modal";
 
 export const useCreateOrder = () => {
   const { mutate, isLoading, error, data } = useMutation({
-    mutationKey: ["create_Order"],
+    mutationKey: ["create_order"],
     mutationFn: async (params: CreateOrderParams) => {
-      return await ProposalAPI.createOrder(params);
+      return await OrderAPI.createOrder(params);
     },
   });
 
