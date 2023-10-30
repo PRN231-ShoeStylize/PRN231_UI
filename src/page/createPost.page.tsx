@@ -2,6 +2,7 @@ import {
   Button,
   createStyles,
   rem,
+  useMantineTheme,
   Text,
   Divider,
   Textarea,

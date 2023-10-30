@@ -38,7 +38,7 @@ const LoginPage: React.FC = (): React.ReactElement => {
             navigate("/provider");
           }
           if (data.role === "Customer") {
-            navigate("/customer");
+            navigate("/profile");
           }
         },
         onError(error, variables, context) {
