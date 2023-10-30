@@ -35,6 +35,7 @@ const CommonRoute = () => {
         {
           path: "/profile",
           element: <ProfilePage />,
+          index: true,
         },
         {
           path: "/create-order/:id",
