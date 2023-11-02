@@ -62,3 +62,10 @@ export interface IProposal {
    createdAt: string,
    submissionResources: string[]
 }
+
+export interface UpdateProposalParams{
+  description: string,
+  price: number,
+  status?: string,
+  submissionResources: string[]
+}

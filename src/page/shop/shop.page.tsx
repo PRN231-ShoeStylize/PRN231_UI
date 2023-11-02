@@ -78,7 +78,6 @@ const ShopHomePage: React.FC = () => {
     );
     params.submissionResources = urls;
     params.postId = selectedPostId;
-    debugger;
     const result = await ProposalAPI._createProposal(params);
     if (result) {
       showNotification({
@@ -96,7 +95,7 @@ const ShopHomePage: React.FC = () => {
       });
     }
     setIsLoading(false);
-    close();
+    handleCloseSubmitModal();
   };
 
   const handleDisplayImage = (links: string[]) => {

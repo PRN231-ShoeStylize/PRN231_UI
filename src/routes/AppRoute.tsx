@@ -7,16 +7,11 @@ import { useNavigate } from "react-router";
 const AppRoute = () => {
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!isTokenValid()) {
-  //     sessionStorage.clear();
-  //     localStorage.clear();
-  //     navigate("/login");
-  //   }
-  // }, []);
   useEffect(() => {
-    if (sessionStorage.getItem(TOKEN_HAS_EXPIRED) != null) {
-      navigate("");
+    if (!isTokenValid()) {
+      sessionStorage.clear();
+      localStorage.clear();
+      navigate("/login");
     }
   }, []);
   return <CommonRoute />;

@@ -1,21 +1,111 @@
 import React, { useEffect, useState } from "react";
-import { IProposal, ProposalStatus } from "../../api/proposal/proposal.model";
-import { Modal, Tabs, Image } from "@mantine/core";
+import {
+  IProposal,
+  ProposalStatus,
+  UpdateProposalParams,
+} from "../../api/proposal/proposal.model";
+import {
+  Modal,
+  Tabs,
+  Image,
+  TextInput,
+  Button,
+  FileInput,
+  Text,
+  Loader,
+} from "@mantine/core";
 import { ProposalAPI } from "../../api/proposal/proposal.api";
 import ProposalWithStatus from "../../components/proposal-card/proposal-with-status.component";
 import { useDisclosure } from "@mantine/hooks";
 import { Carousel } from "@mantine/carousel";
+import { FormikProvider, useFormik } from "formik";
+import { showNotification } from "@mantine/notifications";
+import { uploadImage } from "../../utils/firebase";
 const ProposalPage: React.FC = () => {
   const [proposalStatus, setProposalStatus] = useState<string | null>(
     ProposalStatus.Pending
   );
   const [proposals, setProposals] = useState<IProposal[]>();
   const [displayedImages, setDisplayedImages] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [reload, setReload] = useState<boolean>(false);
+  const [proposalId, setProposalId] = useState<number>(-1);
   const [imageOpend, openImageController] = useDisclosure();
+  const [files, setFiles] = useState<File[]>([]);
+  const [opened, { open, close }] = useDisclosure();
+  const formik = useFormik<UpdateProposalParams>({
+    initialValues: {
+      description: "",
+      price: 100,
+      submissionResources: [],
+    },
+    onSubmit: (values) => handleSubmit(values),
+  });
+
+  const handleSubmit = async (params: any) => {
+    setIsLoading(true);
+    var urls: string[] = [];
+    await Promise.all(
+      files?.map(async (file: File) => {
+        var url = await uploadImage(file);
+
+        if (url) {
+          urls.push(url);
+        }
+      })
+    );
+    debugger;
+    var param : UpdateProposalParams = {
+      ...formik.values,
+      submissionResources: []
+    }
+    if(urls.length > 0){
+      param.submissionResources = urls
+    }
+    const result = await ProposalAPI._updateProposal(proposalId, param);
+    debugger;
+    if (result) {
+      setReload(!reload);
+      showNotification({
+        title: "Success",
+        message: "Proposal updated",
+        color: "lime",
+      });
+    } else {
+      showNotification({
+        title: "Error",
+        message: "Failed to update proposal",
+        color: "red",
+      });
+    }
+    setIsLoading(false);
+    handleCloseSubmitModal();
+  };
+
+  const handleOpenEditModal = async (proposalId: number) => {
+    const prop = await ProposalAPI._getProposalById(proposalId);
+    setProposalId(proposalId);
+    formik.setValues({
+      ...formik.values,
+      description: prop.data.description,
+      price: prop.data.price,
+    });
+    open();
+  };
+
+  const handleCloseSubmitModal = () => {
+    close();
+    setProposalId(-1);
+    setFiles([])
+    formik.resetForm();
+  };
+
   useEffect(() => {
+    setIsLoading(true);
     const getAllPost = async () => {
       const res = await ProposalAPI._getProposal({
-        status: proposalStatus == null ? undefined : proposalStatus, isOfCurrentUser: true
+        status: proposalStatus == null ? undefined : proposalStatus,
+        isOfCurrentUser: true,
       });
       return res;
     };
@@ -24,7 +114,8 @@ const ProposalPage: React.FC = () => {
       setProposals(res.data.results);
       console.log(res.data.results);
     });
-  }, [proposalStatus]);
+    setIsLoading(false);
+  }, [proposalStatus, reload]);
 
   const handleDisplayImage = (links: string[]) => {
     setDisplayedImages(links);
@@ -33,6 +124,7 @@ const ProposalPage: React.FC = () => {
 
   return (
     <>
+      
       <Tabs
         value={proposalStatus}
         onTabChange={setProposalStatus}
@@ -44,12 +136,18 @@ const ProposalPage: React.FC = () => {
           <Tabs.Tab value={ProposalStatus.Rejected}>Rejected Proposal</Tabs.Tab>
         </Tabs.List>
       </Tabs>
-      {proposals?.map((proposal, index) => (
-        <ProposalWithStatus
-          proposal={proposal}
-          handleDisplayImage={handleDisplayImage}
-        />
-      ))}
+      {isLoading && <Loader color="blue" />}
+      {!isLoading && (
+        <>
+          {proposals?.map((proposal, index) => (
+            <ProposalWithStatus
+              handleOpenEditModal={handleOpenEditModal}
+              proposal={proposal}
+              handleDisplayImage={handleDisplayImage}
+            />
+          ))}
+        </>
+      )}
       <Modal opened={imageOpend} onClose={openImageController.close}>
         <div style={{ height: 500, display: "flex" }}>
           <Carousel
@@ -66,6 +164,49 @@ const ProposalPage: React.FC = () => {
             ))}
           </Carousel>
         </div>
+      </Modal>
+      <Modal
+        opened={opened}
+        onClose={handleCloseSubmitModal}
+        title={<h2>Update Proposal</h2>}
+        centered
+      >
+        <FormikProvider value={formik}>
+          <TextInput
+            label="Description"
+            name="description"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+          />
+          <TextInput
+            label="Price"
+            name="price"
+            type="number"
+            value={formik.values.price}
+            onChange={formik.handleChange}
+          />
+          <FileInput
+            accept="image/png,image/jpeg"
+            label="Resources"
+            placeholder="Put your file(s) here"
+            multiple
+            value={files}
+            onChange={setFiles}
+          />
+          <Text color="red">
+            *If you select a file, your old value would be overriden
+          </Text>
+          <Button
+            onClick={() => formik.handleSubmit()}
+            // loading={isLoading}
+            style={{ color: "white" }}
+            fullWidth
+            mt="md"
+            radius="md"
+          >
+            Submit
+          </Button>
+        </FormikProvider>
       </Modal>
     </>
   );

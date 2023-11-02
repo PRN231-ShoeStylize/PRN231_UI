@@ -1,13 +1,18 @@
 import { Card, Grid, createStyles, Image, Button } from "@mantine/core";
 import React from "react";
-import { IProposal } from "../../api/proposal/proposal.model";
-import { IconFileDownload } from "@tabler/icons-react";
-interface IProps{
-    proposal: IProposal,
-    handleDisplayImage: (link: string[]) => void;
+import { IProposal, ProposalStatus } from "../../api/proposal/proposal.model";
+import { IconEdit, IconFileDownload } from "@tabler/icons-react";
+interface IProps {
+  proposal: IProposal;
+  handleDisplayImage: (link: string[]) => void;
+  handleOpenEditModal: (proposalId: number) => void
 }
-const ProposalWithStatus: React.FC<IProps> = ({proposal, handleDisplayImage}) => {
-    const { classes } = useStyles();
+const ProposalWithStatus: React.FC<IProps> = ({
+  proposal,
+  handleDisplayImage,
+  handleOpenEditModal
+}) => {
+  const { classes } = useStyles();
   return (
     <>
       <Card withBorder className={classes.cardContainer}>
@@ -24,7 +29,10 @@ const ProposalWithStatus: React.FC<IProps> = ({proposal, handleDisplayImage}) =>
             <h2>{proposal.description}</h2>
             <div>
               <b>Created by:</b>
-              <span> {proposal.createdByFirstName} {proposal.createdByLastName}</span>
+              <span>
+                {" "}
+                {proposal.createdByFirstName} {proposal.createdByLastName}
+              </span>
             </div>
             <div>
               <b>Created at:</b>
@@ -41,8 +49,23 @@ const ProposalWithStatus: React.FC<IProps> = ({proposal, handleDisplayImage}) =>
                 variant="default"
                 onClick={() => handleDisplayImage(proposal.submissionResources)}
               >
-                Show resources ({proposal.submissionResources != null ? proposal.submissionResources.length : ''})
+                Show resources (
+                {proposal.submissionResources != null
+                  ? proposal.submissionResources.length
+                  : ""}
+                )
               </Button>
+              {proposal.status === ProposalStatus.Pending && (
+                <Button
+                  style={{ marginRight: "1em" }}
+                  leftIcon={<IconEdit size={14} />}
+                  variant="filled"
+                  // color="yellow"
+                  onClick={() => handleOpenEditModal(proposal.id)}
+                >
+                  Edit proposal
+                </Button>
+              )}
 
               {/* <Button style={{marginRight: '1em'}} leftIcon={<IconFileDownload size={14} />} variant="default">
                                 Detailed description
@@ -65,8 +88,8 @@ const ProposalWithStatus: React.FC<IProps> = ({proposal, handleDisplayImage}) =>
 };
 
 const useStyles = createStyles({
-    cardContainer: {
-      width: "95%",
-    },
-  });
+  cardContainer: {
+    width: "95%",
+  },
+});
 export default ProposalWithStatus;

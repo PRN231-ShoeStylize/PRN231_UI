@@ -1,6 +1,6 @@
 import React from "react";
 import { IMainNavBarProp } from "../components/common/navbar.model";
-import { IconDeviceIpadPlus, IconHome2 } from "@tabler/icons-react";
+import { IconDeviceIpadPlus, IconHome2, IconTruckDelivery } from "@tabler/icons-react";
 import MainHeader from "../components/header/MainHeader";
 import { Avatar, Grid } from "@mantine/core";
 import MainNavbar from "../components/common/MainNavbar";
@@ -18,6 +18,7 @@ const ProviderLayout: React.FC = () => {
   const mockdata: IMainNavBarProp[] = [
     { icon: IconHome2, label: "View available posts", href: "/provider" },
     { icon: IconDeviceIpadPlus, label: "Proposals history", href: "/provider/proposal" },
+    { icon: IconTruckDelivery, label: "Order history", href: "/provider/order"}
   ];
 
   return (
