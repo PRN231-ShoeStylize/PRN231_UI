@@ -28,10 +28,7 @@ const CommonRoute = () => {
           path: "/customer",
           element: <HomePage />,
         },
-        {
-          path: "/chat",
-          element: <ChatPage />,
-        },
+
         {
           path: "/profile",
           element: <ProfilePage />,

@@ -26,3 +26,27 @@ export type UpdateProfileParams = {
   shoeSize: number;
   gender: string;
 };
+
+export enum UserRole {
+  CUSTOMER = "Customer",
+  PROVIDER = "Provider",
+  ADMIN = "Admin",
+}
+
+export type GetUserListParams = {
+  role: UserRole;
+};
+
+export type GetUserResultByRole = {
+  id: number;
+  firstname: string;
+  lastname: string;
+  avatarUrl: string;
+  role: string;
+};
+
+export type GetUserListResultByRole = {
+  results: GetUserResultByRole[];
+  totalRecord: number;
+  totalPage: number;
+};

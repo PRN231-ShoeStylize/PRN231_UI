@@ -9,6 +9,7 @@ const _getConfig = (config?: AxiosRequestConfig) => {
     timeout: 10000,
     headers: {
       ...config?.headers,
+
       Authorization: `Bearer ${
         sessionStorage.getItem(TOKEN) || localStorage.getItem(TOKEN)
       }`,

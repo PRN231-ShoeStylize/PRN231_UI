@@ -1,7 +1,12 @@
 import { TOKEN } from "../../constants/constants";
-import { httpClient } from "../../utils/http-client";
+import { httpClient, toQueryParams } from "../../utils/http-client";
 import { GetLoginResult, LoginRequestModel } from "./login/login.model";
-import { GetUserResult, UpdateProfileParams } from "./user.model";
+import {
+  GetUserListParams,
+  GetUserResult,
+  GetUserListResultByRole,
+  UpdateProfileParams,
+} from "./user.model";
 
 export const UserAPI = {
   login: async (params: LoginRequestModel) => {
@@ -9,7 +14,7 @@ export const UserAPI = {
       `/Authenticate/signin`,
       params
     );
-    return res.data;
+    return res?.data;
   },
   _getById: async (id: number) => {
     const res = await httpClient.get<GetUserResult>(`/Users/${id}`);
@@ -29,6 +34,14 @@ export const UserAPI = {
         Authorization: `Bearer ${sessionStorage.getItem(TOKEN)}`,
       },
     });
+    return res.data;
+  },
+  _getUserByRole: async (params: GetUserListParams) => {
+    const res = await httpClient.get<GetUserListResultByRole>(
+      `/Users/role?${toQueryParams(params)}`
+    );
+    console.log(res.data);
+
     return res.data;
   },
 };

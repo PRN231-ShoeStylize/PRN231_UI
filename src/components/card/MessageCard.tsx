@@ -1,25 +1,42 @@
 import React from "react";
 import { Avatar, createStyles, rem } from "@mantine/core";
+import { useGetUserById } from "../../hooks/useGetUserById";
 
-const MessageCard = () => {
+const MessageCard = ({
+  userId,
+  isActive,
+  name,
+  avatar,
+}: {
+  userId: number;
+  isActive: boolean;
+  name: string;
+  avatar: string;
+}) => {
   const { classes } = useStyles();
   return (
-    <div className={classes.main_container}>
+    <div
+      className={classes.main_container}
+      style={{
+        backgroundColor: isActive ? "#eee" : "#fff",
+      }}
+    >
       <div className={classes.avatar_wrapper}>
         <Avatar
-          src={
-            "https://cdn.dribbble.com/userupload/10064008/file/original-ed9f97edacf253ce306dbca6adbbb5ff.png?resize=752x752"
-          }
+          src={avatar}
           className={classes.avatar}
           radius={rem(999)}
           size={rem(52)}
         />
         <div className={classes.content_wrapper}>
-          <p className={classes.name}>Hello_its_me</p>
-          <p className={classes.message}>Create new lucifer .... </p>
+          <p className={classes.name}>
+            {/* {data?.firstname ?? "" + " " + data?.lastname ?? ""} */}
+            {name}
+          </p>
+          <p className={classes.message}>Incoming message</p>
         </div>
       </div>
-      <p className={classes.time}>10m</p>
+      {/* <p className={classes.time}>10m</p> */}
     </div>
   );
 };
@@ -29,7 +46,12 @@ const useStyles = createStyles({
     display: "flex",
     justifyContent: "space-between",
     padding: `0 ${rem(12)}`,
-    marginBottom: rem(20),
+    paddingTop: rem(4),
+    paddingBottom: rem(4),
+    margin: `${rem(0)} ${rem(6)}`,
+    marginBottom: rem(6),
+    borderRadius: rem(12),
+    cursor: "pointer",
   },
   avatar: {
     border: "1px solid #eee",
