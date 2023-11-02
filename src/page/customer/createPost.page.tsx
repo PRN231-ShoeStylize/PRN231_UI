@@ -56,7 +56,7 @@ const CreatePostPage = () => {
       { content: data.content, resourceUrl: "", postResources: urls },
       {
         onSuccess(data, variables, context) {
-          navigate("/");
+          navigate("/profile");
         },
         onError(error, variables, context) {
           console.log(error);

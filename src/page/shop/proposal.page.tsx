@@ -218,6 +218,7 @@ const ProposalPage: React.FC = () => {
                 })
                 setFiles([])
               }else{
+                formik.setFieldError('submissionResources',undefined)
                 setFiles(files)
               }
               

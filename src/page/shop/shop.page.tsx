@@ -182,6 +182,7 @@ const ShopHomePage: React.FC = () => {
                 });
                 setFiles([]);
               } else {
+                formik.setFieldError('submissionResources',undefined)
                 setFiles(files);
               }
             }}
