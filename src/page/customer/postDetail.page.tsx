@@ -135,7 +135,7 @@ const PostDetailPage = () => {
         paymentMethod,
         price,
         proposalId: chosedProposalData.id,
-        status: OrderStatus.Accepted,
+        status: OrderStatus.Waiting,
       },
       {
         onSuccess(data, variables, context) {

@@ -1,8 +1,7 @@
 export enum OrderStatus {
-  Accepted = "Accepted",
-  Rejected = "Rejected",
-  Done = "Done",
-  Pending = "Pending",
+  Waiting = "Waiting",
+  Paid = "Paid",
+  Deleted = "Deleted",
 }
 
 export type CreateOrderParams = {
@@ -12,6 +11,7 @@ export type CreateOrderParams = {
   paymentMethod: "COD";
   status: OrderStatus;
 };
+
 
 export type GetOrderResult = {
   price: number;

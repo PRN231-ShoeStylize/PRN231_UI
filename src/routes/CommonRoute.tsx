@@ -12,6 +12,8 @@ import CreateOrderPage from "../page/customer/createOrder.page";
 
 import ProviderLayout from "../layouts/provider.layout";
 import PostDetailPage from "../page/customer/postDetail.page";
+import ProposalPage from "../page/shop/proposal.page";
+import OrderPage from "../page/shop/order.page";
 
 const CommonRoute = () => {
   let element = useRoutes([
@@ -50,9 +52,17 @@ const CommonRoute = () => {
       children: [
         {
           path: "",
-          element: <ShopHomePage />,
+          element: <ShopHomePage/>
         },
-      ],
+        {
+          path: "/provider/proposal",
+          element: <ProposalPage/>
+        },
+        {
+          path: "/provider/order",
+          element: <OrderPage/>
+        },
+      ]
     },
     {
       path: "/register",
