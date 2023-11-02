@@ -24,6 +24,14 @@ import { Carousel, Embla, useAnimationOffsetEffect } from "@mantine/carousel";
 import { CreateProposalParams } from "../../api/proposal/proposal.model";
 import { ProposalAPI } from "../../api/proposal/proposal.api";
 import { uploadImage } from "../../utils/firebase";
+import * as Yup from "yup";
+const CreateProposalSchema = Yup.object().shape({
+  description: Yup.string(),
+  price: Yup.number().max(1000000, "Price should be less than $1000000"),
+  submissionResources: Yup.array()
+    .of(Yup.string())
+    .max(10, "Only 10 attachments are allowed"),
+});
 
 const ShopHomePage: React.FC = () => {
   const mockdata: IMainNavBarProp[] = [
@@ -49,6 +57,7 @@ const ShopHomePage: React.FC = () => {
       price: 100,
       submissionResources: [],
     },
+    validationSchema: CreateProposalSchema,
     onSubmit: (values) => handleSubmit(values),
   });
 
@@ -76,6 +85,15 @@ const ShopHomePage: React.FC = () => {
         }
       })
     );
+    if (urls.length > 5) {
+      formik.setErrors({
+        ...formik.errors,
+        submissionResources:
+          "Submission resources must not exceed 5 attachments",
+      });
+      setIsLoading(false);
+      return;
+    }
     params.submissionResources = urls;
     params.postId = selectedPostId;
     const result = await ProposalAPI._createProposal(params);
@@ -140,6 +158,7 @@ const ShopHomePage: React.FC = () => {
             value={formik.values.description}
             onChange={formik.handleChange}
           />
+          {formik.errors.description && <Text color="red">{formik.errors.description}</Text>}
           <TextInput
             label="Price"
             name="price"
@@ -147,14 +166,27 @@ const ShopHomePage: React.FC = () => {
             value={formik.values.price}
             onChange={formik.handleChange}
           />
+          {formik.errors.price && <Text color="red">{formik.errors.price}</Text>}
           <FileInput
             accept="image/png,image/jpeg"
             label="Resources"
             placeholder="Put your file(s) here"
             multiple
             value={files}
-            onChange={setFiles}
+            onChange={(files) => {
+              if (files.length >= 5) {
+                formik.setErrors({
+                  ...formik.errors,
+                  submissionResources:
+                    "Submission resources must not exceed 5 attachments",
+                });
+                setFiles([]);
+              } else {
+                setFiles(files);
+              }
+            }}
           />
+          {formik.errors.submissionResources && <Text color="red">{formik.errors.submissionResources}</Text>}
           <Button
             onClick={() => formik.handleSubmit()}
             loading={isLoading}

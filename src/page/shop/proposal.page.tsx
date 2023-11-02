@@ -21,6 +21,14 @@ import { Carousel } from "@mantine/carousel";
 import { FormikProvider, useFormik } from "formik";
 import { showNotification } from "@mantine/notifications";
 import { uploadImage } from "../../utils/firebase";
+import * as Yup from "yup";
+const UpdateProposalSchema = Yup.object().shape({
+  description: Yup.string(),
+  price: Yup.number().max(1000000, "Price should be less than $1000000"),
+  submissionResources: Yup.array()
+    .of(Yup.string())
+    .max(10, "Only 10 attachments are allowed"),
+});
 const ProposalPage: React.FC = () => {
   const [proposalStatus, setProposalStatus] = useState<string | null>(
     ProposalStatus.Pending
@@ -39,6 +47,7 @@ const ProposalPage: React.FC = () => {
       price: 100,
       submissionResources: [],
     },
+    validationSchema: UpdateProposalSchema,
     onSubmit: (values) => handleSubmit(values),
   });
 
@@ -55,12 +64,20 @@ const ProposalPage: React.FC = () => {
       })
     );
     debugger;
-    var param : UpdateProposalParams = {
+    var param: UpdateProposalParams = {
       ...formik.values,
-      submissionResources: []
+      submissionResources: [],
+    };
+    if(urls.length > 5){
+      formik.setErrors({
+        ...formik.errors,
+        submissionResources: "Submission resources must not exceed 5 attachments"
+      })
+      setIsLoading(false);
+      return;
     }
-    if(urls.length > 0){
-      param.submissionResources = urls
+    if (urls.length > 0) {
+      param.submissionResources = urls;
     }
     const result = await ProposalAPI._updateProposal(proposalId, param);
     debugger;
@@ -96,7 +113,7 @@ const ProposalPage: React.FC = () => {
   const handleCloseSubmitModal = () => {
     close();
     setProposalId(-1);
-    setFiles([])
+    setFiles([]);
     formik.resetForm();
   };
 
@@ -117,6 +134,7 @@ const ProposalPage: React.FC = () => {
     setIsLoading(false);
   }, [proposalStatus, reload]);
 
+
   const handleDisplayImage = (links: string[]) => {
     setDisplayedImages(links);
     openImageController.open();
@@ -124,7 +142,6 @@ const ProposalPage: React.FC = () => {
 
   return (
     <>
-      
       <Tabs
         value={proposalStatus}
         onTabChange={setProposalStatus}
@@ -178,6 +195,7 @@ const ProposalPage: React.FC = () => {
             value={formik.values.description}
             onChange={formik.handleChange}
           />
+          {formik.errors.description && <Text color="red">{formik.errors.description}</Text>}
           <TextInput
             label="Price"
             name="price"
@@ -185,17 +203,30 @@ const ProposalPage: React.FC = () => {
             value={formik.values.price}
             onChange={formik.handleChange}
           />
+          {formik.errors.price && <Text color="red">{formik.errors.price}</Text>}
           <FileInput
             accept="image/png,image/jpeg"
             label="Resources"
             placeholder="Put your file(s) here"
             multiple
             value={files}
-            onChange={setFiles}
+            onChange={(files) => {
+              if(files.length>=5){
+                formik.setErrors({
+                  ...formik.errors,
+                  submissionResources: "Submission resources must not exceed 5 attachments"
+                })
+                setFiles([])
+              }else{
+                setFiles(files)
+              }
+              
+            }}
           />
           <Text color="red">
             *If you select a file, your old value would be overriden
           </Text>
+          {formik.errors.submissionResources && <Text color="red">{formik.errors.submissionResources}</Text>}
           <Button
             onClick={() => formik.handleSubmit()}
             // loading={isLoading}
