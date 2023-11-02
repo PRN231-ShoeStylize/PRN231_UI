@@ -1,4 +1,7 @@
-const basePath = "http://prn2311.somee.com/api"
+const basePath = "https://prn2311.somee.com/api"
 export const apiPath = {
-    CreateProposal: `${basePath}/Proposal`
+    Proposal: {
+        Create: `${basePath}/Proposal`,
+        Get: `${basePath}/Proposal`
+    }
 }

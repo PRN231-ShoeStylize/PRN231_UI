@@ -46,7 +46,7 @@ const ProposalCard: React.FC<IProps> = ({
                   variant="default"
                   onClick={() => handleDisplayImage(post.postResources)}
                 >
-                  Show resources ({post.postResources.length})
+                  Show resources ({post.postResources != null ? post.postResources.length : ''})
                 </Button>
 
               {/* <Button style={{marginRight: '1em'}} leftIcon={<IconFileDownload size={14} />} variant="default">
