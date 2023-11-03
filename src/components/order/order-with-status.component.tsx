@@ -1,5 +1,5 @@
 import { Badge, Button, Card, Group, Modal, Space, Text } from "@mantine/core";
-import React from "react";
+import React, { useState } from "react";
 import { GetOrderResult, OrderStatus } from "../../api/order/order.modal";
 import { useDisclosure } from "@mantine/hooks";
 import { OrderAPI } from "../../api/order/order.api";
@@ -10,7 +10,9 @@ interface IProps {
 }
 const OrderWithStatus: React.FC<IProps> = ({ order, handleReload }) => {
   const [opened, { open, close }] = useDisclosure(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleUpdateStatus = async (id: number, status: string) => {
+    setIsLoading(true)
     const res = await OrderAPI.updateOrderStatus(id, status);
     if (res) {
       showNotification({
@@ -28,6 +30,7 @@ const OrderWithStatus: React.FC<IProps> = ({ order, handleReload }) => {
         // classNames: classes,
       });
     }
+    setIsLoading(false)
   };
   return (
     <>
@@ -107,7 +110,7 @@ const OrderWithStatus: React.FC<IProps> = ({ order, handleReload }) => {
           </Text>
         </Modal.Body>
         <Group>
-          <Button fullWidth onClick={() => handleUpdateStatus(order.id, OrderStatus.Paid)}>Confirm</Button>
+          <Button loading={isLoading} fullWidth onClick={() => handleUpdateStatus(order.id, OrderStatus.Paid)}>Confirm</Button>
           <Button variant="filled" color="red" fullWidth onClick={close}>
             Close
           </Button>

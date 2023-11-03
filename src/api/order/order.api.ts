@@ -25,7 +25,7 @@ export const OrderAPI = {
     return res
   },
   updateOrderStatus : async (id: number, status: string) : Promise<AxiosResponse<any>> => {
-    const res = await httpClient.put(`/Orders/${id}`, {status: status})
+    const res = await httpClient.put<any, string>(`/Orders/status/${id}`, {status: status})
     return res
   }
 };
