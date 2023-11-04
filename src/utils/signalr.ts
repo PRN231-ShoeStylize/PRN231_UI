@@ -1,6 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import { TOKEN } from "../constants/constants";
 import { log } from "@grpc/grpc-js/build/src/logging";
+import { decode, isTokenValid } from "./jwt";
 
 export class RemoteSignalrService {
   public hubConnection!: signalR.HubConnection;
@@ -29,10 +30,14 @@ export class RemoteSignalrService {
   }
 
   public async sendMessage(data: any) {
-    this.hubConnection.invoke("SendMessageAsync", {
-      receivedById: data.receivedById,
-      content: data.content,
-    });
+    this.hubConnection
+      .invoke("SendMessageAsync", {
+        receivedById: data.receivedById,
+        content: data.content,
+      })
+      .then(() => {
+        console.log(data.receivedById);
+      });
   }
 
   public onReceivedMessage(handleMethod: (data: any) => void) {

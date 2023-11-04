@@ -13,7 +13,7 @@ import { IconLock, IconMail } from "@tabler/icons-react";
 import { FcGoogle } from "react-icons/fc";
 import { BsApple } from "react-icons/bs";
 import { useLogin } from "../hooks/useLogin";
-import { TOKEN } from "../constants/constants";
+import { TOKEN, TOKEN_HAS_EXPIRED } from "../constants/constants";
 import { useNavigate } from "react-router";
 
 const LoginPage: React.FC = (): React.ReactElement => {
@@ -32,7 +32,7 @@ const LoginPage: React.FC = (): React.ReactElement => {
       { email: username, password },
       {
         onSuccess(data, variables, context) {
-          sessionStorage.clear();
+          sessionStorage.removeItem(TOKEN_HAS_EXPIRED);
           sessionStorage.setItem(TOKEN, data.token);
           if (data.role === "Provider") {
             navigate("/provider");

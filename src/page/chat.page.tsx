@@ -52,13 +52,16 @@ const renderMessageCard = ({
   recievedBy,
   sentAt,
   sentBy,
-}: Message) => {
+  key,
+}: Message & { key: number }) => {
+  // console.log(content, sentAt);
+
   return (
     <Flex
-      key={content}
+      key={key}
       mb={rem(6)}
       style={{
-        alignSelf: sentBy == user_id ? "flex-end" : "flex-start",
+        alignSelf: sentBy === user_id ? "flex-end" : "flex-start",
         marginRight: rem(12),
       }}
     >
@@ -149,12 +152,14 @@ const ChatPage = () => {
   useEffect(() => {
     if (signalr) {
       signalr?.onReceivedMessage((data: Message) => {
-        setmessage([...message, data]);
+        console.log(data);
+
+        setmessage([data, ...message]);
       });
     }
 
     return () => {};
-  }, [message, signalr]);
+  }, [message]);
 
   useEffect(() => {
     if (userListData && userListData.results.length > 0) {
@@ -218,8 +223,8 @@ const ChatPage = () => {
           </div>
           <ScrollArea className={classes.chat_body_scroll_wrapper}>
             <div className={classes.chat_body_wrapper}>
-              {message.reverse().map((item, index) => {
-                return renderMessageCard(item);
+              {[...message].reverse().map((item, index) => {
+                return renderMessageCard({ ...item, key: index });
               })}
             </div>
           </ScrollArea>
@@ -238,7 +243,6 @@ const ChatPage = () => {
                       content: value,
                     });
                     setmessage([
-                      ...message,
                       {
                         chatRoomId: 0,
                         content: value,
@@ -246,6 +250,7 @@ const ChatPage = () => {
                         sentBy: user_id,
                         sentAt: new Date().toString(),
                       },
+                      ...message,
                     ]);
 
                     setValue("");
