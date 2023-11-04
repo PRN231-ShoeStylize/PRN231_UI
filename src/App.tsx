@@ -37,16 +37,14 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <React.StrictMode>
-      <MantineProvider withGlobalStyles withNormalizeCSS>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <Notifications limit={5} autoClose={4000} />
-            <AppRoute />
-          </BrowserRouter>
-        </QueryClientProvider>
-      </MantineProvider>
-    </React.StrictMode>
+    <MantineProvider withGlobalStyles withNormalizeCSS>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Notifications limit={5} autoClose={4000} />
+          <AppRoute />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </MantineProvider>
   );
 }
 

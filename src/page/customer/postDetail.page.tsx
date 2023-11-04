@@ -145,6 +145,7 @@ const PostDetailPage = () => {
             color: "green",
             icon: <IconX />,
           });
+          close();
         },
         onError(error, variables, context) {
           notifications.show({
@@ -154,10 +155,10 @@ const PostDetailPage = () => {
             icon: <IconExclamationCircle />,
           });
           console.log(error);
+          close();
         },
       }
     );
-    console.log(price, address, paymentMethod, params.id);
   };
   const formik = useFormik({
     initialValues: {
@@ -169,8 +170,6 @@ const PostDetailPage = () => {
   });
 
   const renderProposal = (data: GetProposalResult[]) => {
-    console.log(data);
-
     return data?.map((item, index) => (
       <Flex
         justify="flex-start"

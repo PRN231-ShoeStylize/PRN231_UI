@@ -20,7 +20,6 @@ const ProviderLayout: React.FC = () => {
     { icon: IconDeviceIpadPlus, label: "Proposals history", href: "/provider/proposal" },
     { icon: IconTruckDelivery, label: "Order history", href: "/provider/order"}
   ];
-
   return (
     <>
       <MainHeader />
