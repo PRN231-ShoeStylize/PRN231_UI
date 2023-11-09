@@ -40,6 +40,9 @@ const LoginPage: React.FC = (): React.ReactElement => {
           if (data.role === "Customer") {
             navigate("/profile");
           }
+          if (data.role === "Admin") {
+            navigate("/admin");
+          }
         },
         onError(error, variables, context) {
           console.log(error);

@@ -50,3 +50,9 @@ export type GetUserListResultByRole = {
   totalRecord: number;
   totalPage: number;
 };
+
+export type GetUserList = {
+  results: GetUserResult[];
+  totalRecord: number;
+  totalPage: number;
+};

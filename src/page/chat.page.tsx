@@ -30,6 +30,11 @@ import { GetPostResult } from "../api/post/post.model";
 import { useNavigate } from "react-router";
 import { useGetUserByRole } from "../hooks/useGetUserResultByRole";
 import { UserRole } from "../api/user/user.model";
+import { useGetProposalList } from "../hooks/useGetProposalList";
+import {
+  GetProposalListResult,
+  GetProposalResult,
+} from "../api/proposal/proposal.model";
 
 export type Message = {
   sentBy: number;
@@ -38,13 +43,6 @@ export type Message = {
   content: string;
   sentAt: string;
 };
-
-const user_id = +decode(isTokenValid() ?? "")[
-  "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-];
-const user_role = decode(isTokenValid() ?? "")[
-  "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-];
 
 const renderMessageCard = ({
   chatRoomId,
@@ -55,6 +53,9 @@ const renderMessageCard = ({
   key,
 }: Message & { key: number }) => {
   // console.log(content, sentAt);
+  const user_id = +decode(isTokenValid() ?? "")[
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+  ];
 
   return (
     <Flex
@@ -81,26 +82,15 @@ const renderMessageCard = ({
   );
 };
 
-const ChatPage = () => {
-  const { classes } = useStyles();
-  const [message, setmessage] = useState<Message[]>([]);
-  const [value, setValue] = useState<string>("");
-  const [signalr, setSignalr] = useState<RemoteSignalrService>();
-  const [activeMessageUserId, setactiveMessageUserId] = useState<number>(0);
-  const { data } = useGetUserById(activeMessageUserId);
+const PostSection = ({
+  user_id,
+  imageStyle,
+}: {
+  user_id: number;
+  imageStyle: string;
+}) => {
   const { data: postList } = useGetPostByUserId(user_id);
-  const { data: userListData, isLoading: isUserListDataLoading } =
-    useGetUserByRole({
-      role: user_role == "Customer" ? UserRole.PROVIDER : UserRole.CUSTOMER,
-    });
   const navigate = useNavigate();
-
-  const handleSendMessage = (params: {
-    receivedById: number;
-    content: string;
-  }) => {
-    signalr?.sendMessage(params);
-  };
 
   const renderImageGallery = (posts: GetPostResult[]) => {
     return posts?.map((item, index) => (
@@ -109,7 +99,7 @@ const ChatPage = () => {
           <Image
             height={200}
             onClick={() => navigate(`/post/${item.id}`)}
-            className={classes.image}
+            className={imageStyle}
             radius={"md"}
             src={item?.postResources?.[0]}
             fit="cover"
@@ -119,6 +109,77 @@ const ChatPage = () => {
         )}
       </Grid.Col>
     ));
+  };
+
+  return (
+    <div>
+      <Grid gutter={"xs"} m={0}>
+        {renderImageGallery(postList ?? [])}
+      </Grid>
+    </div>
+  );
+};
+
+const ProposalSection = ({
+  proposal_id,
+  imageStyle,
+}: {
+  proposal_id: number;
+  imageStyle: string;
+}) => {
+  const { data: proposalList } = useGetProposalList({
+    createdById: proposal_id,
+  });
+  const navigate = useNavigate();
+  const renderImageGallery = (posts: GetProposalResult[]) => {
+    return posts?.map((item, index) => (
+      <Grid.Col span={12} key={index}>
+        {item.submissionResources ? (
+          <Image
+            height={200}
+            onClick={() => navigate(`/post/${item.id}`)}
+            className={imageStyle}
+            radius={"md"}
+            src={item?.submissionResources?.[0]}
+            fit="cover"
+          />
+        ) : (
+          <p>{item.description}</p>
+        )}
+      </Grid.Col>
+    ));
+  };
+
+  return (
+    <Grid gutter={0} columns={24}>
+      {renderImageGallery(proposalList?.results ?? [])}
+    </Grid>
+  );
+};
+
+const ChatPage = () => {
+  const user_id = +decode(isTokenValid() ?? "")[
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+  ];
+  const user_role = decode(isTokenValid() ?? "")[
+    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+  ];
+  const { classes } = useStyles();
+  const [message, setmessage] = useState<Message[]>([]);
+  const [value, setValue] = useState<string>("");
+  const [signalr, setSignalr] = useState<RemoteSignalrService>();
+  const [activeMessageUserId, setactiveMessageUserId] = useState<number>(0);
+  const { data } = useGetUserById(activeMessageUserId);
+  const { data: userListData, isLoading: isUserListDataLoading } =
+    useGetUserByRole({
+      role: user_role == "Customer" ? UserRole.PROVIDER : UserRole.CUSTOMER,
+    });
+
+  const handleSendMessage = (params: {
+    receivedById: number;
+    content: string;
+  }) => {
+    signalr?.sendMessage(params);
   };
 
   useEffect(() => {
@@ -246,7 +307,7 @@ const ChatPage = () => {
                       {
                         chatRoomId: 0,
                         content: value,
-                        recievedBy: 3,
+                        recievedBy: activeMessageUserId,
                         sentBy: user_id,
                         sentAt: new Date().toString(),
                       },
@@ -265,14 +326,25 @@ const ChatPage = () => {
         </div>
       </Grid.Col>
       <Grid.Col span={6} className={classes.proposal_container}>
-        <div className={classes.proposal_header_wrapper}>
-          <p className={classes.proposal_title}>Active post</p>
-          <ActionIcon className={classes.dot_wrapper}>
-            <IconDotsVertical color="#5754ef" />
-          </ActionIcon>
-        </div>
-        <div className={classes.proposal_body_wrapper}>
-          <Grid>{renderImageGallery(postList ?? [])}</Grid>
+        <div className={classes.proposal_wrapper}>
+          <div className={classes.proposal_header_wrapper}>
+            <p className={classes.proposal_title}>
+              {user_role == UserRole.CUSTOMER ? "Proposals" : "Posts"}
+            </p>
+            <ActionIcon className={classes.dot_wrapper}>
+              <IconDotsVertical color="#5754ef" />
+            </ActionIcon>
+          </div>
+          <ScrollArea className={classes.proposal_body_wrapper}>
+            {user_role == UserRole.CUSTOMER ? (
+              <PostSection user_id={user_id} imageStyle={classes.image} />
+            ) : (
+              <ProposalSection
+                proposal_id={user_id}
+                imageStyle={classes.image}
+              />
+            )}
+          </ScrollArea>
         </div>
       </Grid.Col>
     </Grid>
@@ -281,7 +353,7 @@ const ChatPage = () => {
 
 const useStyles = createStyles({
   main_container: {
-    width: "100vw",
+    // width: "100vw",
     height: "100vh",
   },
   message_container: {
@@ -360,6 +432,11 @@ const useStyles = createStyles({
     paddingTop: rem(6),
   },
   proposal_container: {},
+  proposal_wrapper: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100vh",
+  },
   proposal_header_wrapper: {
     display: "flex",
     justifyContent: "space-between",
@@ -381,7 +458,8 @@ const useStyles = createStyles({
     "&:hover": { backgroundColor: "#efeffd" },
   },
   proposal_body_wrapper: {
-    margin: `${rem(10)}`,
+    // margin: `${rem(10)}`,
+    flex: 1,
   },
   image: {
     cursor: "pointer",

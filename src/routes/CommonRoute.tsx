@@ -1,4 +1,4 @@
-import { useNavigate, useRoutes } from "react-router-dom";
+import { Outlet, useNavigate, useRoutes } from "react-router-dom";
 import LoginPage from "../page/login.page";
 import RegisterPage from "../page/register.page";
 import MainHeader from "../components/header/MainHeader";
@@ -14,6 +14,7 @@ import ProviderLayout from "../layouts/provider.layout";
 import PostDetailPage from "../page/customer/postDetail.page";
 import ProposalPage from "../page/shop/proposal.page";
 import OrderPage from "../page/shop/order.page";
+import AdminLayout from "../layouts/admin.layout";
 
 const CommonRoute = () => {
   let element = useRoutes([
@@ -52,17 +53,21 @@ const CommonRoute = () => {
       children: [
         {
           path: "",
-          element: <ShopHomePage/>
+          element: <ShopHomePage />,
         },
         {
           path: "/provider/proposal",
-          element: <ProposalPage/>
+          element: <ProposalPage />,
         },
         {
           path: "/provider/order",
-          element: <OrderPage/>
+          element: <OrderPage />,
         },
-      ]
+      ],
+    },
+    {
+      path: "/admin",
+      element: <AdminLayout />,
     },
     {
       path: "/register",

@@ -1,6 +1,10 @@
 import { AxiosResponse } from "axios";
 import { httpClient } from "../../utils/http-client";
-import { CreatePostParams, GetPostResult } from "./post.model";
+import {
+  CreatePostParams,
+  GetPostResult,
+  UpdatePostParams,
+} from "./post.model";
 import { TOKEN } from "../../constants/constants";
 
 export const PostAPI = {
@@ -22,6 +26,10 @@ export const PostAPI = {
   },
   getPostByPostId: async (postId: number) => {
     const res = await httpClient.get<GetPostResult>(`/Post/${postId}`);
+    return res.data;
+  },
+  _updatePost: async (params: UpdatePostParams, postId: number) => {
+    const res = await httpClient.put<any>(`/Post/${postId}`, params);
     return res.data;
   },
 };

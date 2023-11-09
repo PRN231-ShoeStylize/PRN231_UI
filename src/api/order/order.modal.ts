@@ -1,3 +1,5 @@
+import { ProposalStatus } from "../proposal/proposal.model";
+
 export enum OrderStatus {
   Waiting = "Waiting",
   Paid = "Paid",
@@ -9,9 +11,8 @@ export type CreateOrderParams = {
   address: string;
   proposalId: number;
   paymentMethod: "COD";
-  status: OrderStatus;
+  status: ProposalStatus;
 };
-
 
 export type GetOrderResult = {
   price: number;
@@ -46,6 +47,19 @@ export type GetOrderResult = {
     submissionResources: any;
     id: number;
   };
+  proposalId: number;
+  shipmentId: number;
+  id: number;
+};
+
+export type GetAllOrderResult = {
+  price: number;
+  address: string;
+  status: string;
+  createdAt: string;
+  paymentMethod: string;
+  orderStatus: string;
+  proposal: any;
   proposalId: number;
   shipmentId: number;
   id: number;

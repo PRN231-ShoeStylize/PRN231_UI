@@ -136,13 +136,17 @@ const ShopHomePage: React.FC = () => {
     <>
       <Grid>
         <Grid.Col span={11}>
-          {posts.map((post) => (
-            <ProposalCard
-              post={post}
-              handleOpenSubmitModal={handleOpenSubmitModal}
-              handleDisplayImage={handleDisplayImage}
-            />
-          ))}
+          {posts.map((post) =>
+            post.status != "Done" ? (
+              <ProposalCard
+                post={post}
+                handleOpenSubmitModal={handleOpenSubmitModal}
+                handleDisplayImage={handleDisplayImage}
+              />
+            ) : (
+              <></>
+            )
+          )}
         </Grid.Col>
       </Grid>
       <Modal
@@ -158,7 +162,9 @@ const ShopHomePage: React.FC = () => {
             value={formik.values.description}
             onChange={formik.handleChange}
           />
-          {formik.errors.description && <Text color="red">{formik.errors.description}</Text>}
+          {formik.errors.description && (
+            <Text color="red">{formik.errors.description}</Text>
+          )}
           <TextInput
             label="Price"
             name="price"
@@ -166,7 +172,9 @@ const ShopHomePage: React.FC = () => {
             value={formik.values.price}
             onChange={formik.handleChange}
           />
-          {formik.errors.price && <Text color="red">{formik.errors.price}</Text>}
+          {formik.errors.price && (
+            <Text color="red">{formik.errors.price}</Text>
+          )}
           <FileInput
             accept="image/png,image/jpeg"
             label="Resources"
@@ -182,12 +190,14 @@ const ShopHomePage: React.FC = () => {
                 });
                 setFiles([]);
               } else {
-                formik.setFieldError('submissionResources',undefined)
+                formik.setFieldError("submissionResources", undefined);
                 setFiles(files);
               }
             }}
           />
-          {formik.errors.submissionResources && <Text color="red">{formik.errors.submissionResources}</Text>}
+          {formik.errors.submissionResources && (
+            <Text color="red">{formik.errors.submissionResources}</Text>
+          )}
           <Button
             onClick={() => formik.handleSubmit()}
             loading={isLoading}

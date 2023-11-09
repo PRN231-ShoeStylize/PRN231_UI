@@ -1,6 +1,10 @@
 import { AxiosResponse } from "axios";
 import { httpClient } from "../../utils/http-client";
-import { CreateOrderParams, GetOrderResult } from "./order.modal";
+import {
+  CreateOrderParams,
+  GetAllOrderResult,
+  GetOrderResult,
+} from "./order.modal";
 
 export const OrderAPI = {
   createOrder: async (params: CreateOrderParams) => {
@@ -20,12 +24,25 @@ export const OrderAPI = {
     const res = await httpClient.get<GetOrderResult[]>(`/Orders/user`);
     return res.data;
   },
-  getOrderByUserTokenAndStatus : async (status: string|null) : Promise<AxiosResponse<GetOrderResult[]>> => {
-    const res = await httpClient.get<GetOrderResult[]>(`/Orders/user?status=${status}`)
-    return res
+  getOrderByUserTokenAndStatus: async (
+    status: string | null
+  ): Promise<AxiosResponse<GetOrderResult[]>> => {
+    const res = await httpClient.get<GetOrderResult[]>(
+      `/Orders/user?status=${status}`
+    );
+    return res;
   },
-  updateOrderStatus : async (id: number, status: string) : Promise<AxiosResponse<any>> => {
-    const res = await httpClient.put<any, string>(`/Orders/status/${id}`, {status: status})
-    return res
-  }
+  updateOrderStatus: async (
+    id: number,
+    status: string
+  ): Promise<AxiosResponse<any>> => {
+    const res = await httpClient.put<any, string>(`/Orders/status/${id}`, {
+      status: status,
+    });
+    return res;
+  },
+  _getOrders: async () => {
+    const res = await httpClient.get<GetAllOrderResult[]>(`/Orders`);
+    return res?.data;
+  },
 };
