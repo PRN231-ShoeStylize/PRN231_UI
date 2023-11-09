@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import PostCard, { PostCardType } from "../../components/card/PostCard";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useCreatePost } from "../../hooks/useCreatePost";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { uploadImage } from "../../utils/firebase";
 import {
@@ -24,22 +23,28 @@ import {
   NumberInput,
   TextInput,
   Group,
+  Notification,
 } from "@mantine/core";
 import { useGetPostByPostId } from "../../hooks/useGetPostByPostId";
 import { useGetProposalList } from "../../hooks/useGetProposalList";
 import {
+  IconCheck,
   IconExclamationCircle,
   IconMessageShare,
   IconSquareRoundedPlus,
   IconX,
 } from "@tabler/icons-react";
-import { GetProposalResult } from "../../api/proposal/proposal.model";
+import {
+  GetProposalResult,
+  ProposalStatus,
+} from "../../api/proposal/proposal.model";
 import { useDisclosure } from "@mantine/hooks";
 import { FormikProvider, useFormik } from "formik";
 import { Carousel } from "@mantine/carousel";
 import { useCreateOrder } from "../../hooks/useCreateOrder";
 import { OrderStatus } from "../../api/order/order.modal";
 import { notifications } from "@mantine/notifications";
+import { useUpdatePostProfile } from "../../hooks/useUpdatePost";
 
 type Inputs = {
   content: any;
@@ -65,8 +70,8 @@ const PostDetailPage = () => {
   } = useForm<Inputs>();
   const [isCreateLoading, setisCreateLoading] = useState<boolean>(false);
 
-  const { mutate: createPost, isLoading: isCreatePostLoading } =
-    useCreatePost();
+  const { mutate: updatePost, isLoading: isUpdatePostLoading } =
+    useUpdatePostProfile();
 
   const { data, isLoading } = useGetPostByPostId(+(params?.id ?? 0));
   const { data: proposalData, isLoading: isProposalLoading } =
@@ -88,11 +93,17 @@ const PostDetailPage = () => {
     );
     setisCreateLoading(false);
 
-    createPost(
-      { content: data.content, resourceUrl: "", postResources: urls },
+    updatePost(
+      {
+        content: data.content,
+        resourceUrl: urls?.[0],
+        postResources: urls,
+        postId: +(params?.id ?? 0),
+        status: "Active",
+      },
       {
         onSuccess(data, variables, context) {
-          navigate("/");
+          navigate(0);
         },
         onError(error, variables, context) {
           console.log(error);
@@ -103,7 +114,8 @@ const PostDetailPage = () => {
     // console.log(data, urls);
   };
 
-  const { mutate: createOrder } = useCreateOrder();
+  const { mutate: createOrder, isLoading: createOrderLoading } =
+    useCreateOrder();
 
   const previews = files.map((file, index) => {
     const imageUrl = URL.createObjectURL(file);
@@ -120,7 +132,7 @@ const PostDetailPage = () => {
 
   //Order
 
-  const handleLogin = ({
+  const handleCreateOrder = ({
     price,
     address,
     paymentMethod,
@@ -135,7 +147,7 @@ const PostDetailPage = () => {
         paymentMethod,
         price,
         proposalId: chosedProposalData.id,
-        status: OrderStatus.Waiting,
+        status: ProposalStatus.Accepted,
       },
       {
         onSuccess(data, variables, context) {
@@ -146,6 +158,7 @@ const PostDetailPage = () => {
             icon: <IconX />,
           });
           close();
+          navigate(0);
         },
         onError(error, variables, context) {
           notifications.show({
@@ -166,11 +179,11 @@ const PostDetailPage = () => {
       address: "",
       paymentMethod: "COD",
     },
-    onSubmit: handleLogin,
+    onSubmit: handleCreateOrder,
   });
 
-  const renderProposal = (data: GetProposalResult[]) => {
-    return data?.map((item, index) => (
+  const renderProposal = (proposals: GetProposalResult[]) => {
+    return proposals?.map((item, index) => (
       <Flex
         justify="flex-start"
         key={index}
@@ -205,24 +218,30 @@ const PostDetailPage = () => {
           <p style={{ marginLeft: rem(60), marginBottom: rem(12) }}>
             {item.description}
           </p>
-          <Tooltip label={"Chat with provider"}>
-            <Button variant="subtle">
-              {" "}
-              <IconMessageShare />
-            </Button>
-          </Tooltip>
-          <Tooltip label={"Accept proposal"}>
-            <Button
-              onClick={() => {
-                setchosedProposalData({ id: item?.id, price: item?.price });
-                formik.setFieldValue("price", item?.price);
-                open();
-              }}
-              variant="subtle"
-            >
-              <IconSquareRoundedPlus />
-            </Button>
-          </Tooltip>
+          {data?.status != "Done" ? (
+            <>
+              <Tooltip label={"Chat with provider"}>
+                <Button variant="subtle">
+                  {" "}
+                  <IconMessageShare />
+                </Button>
+              </Tooltip>
+              <Tooltip label={"Accept proposal"}>
+                <Button
+                  onClick={() => {
+                    setchosedProposalData({ id: item?.id, price: item?.price });
+                    formik.setFieldValue("price", item?.price);
+                    open();
+                  }}
+                  variant="subtle"
+                >
+                  <IconSquareRoundedPlus />
+                </Button>
+              </Tooltip>
+            </>
+          ) : (
+            <></>
+          )}
         </Box>
       </Flex>
     ));
@@ -238,6 +257,7 @@ const PostDetailPage = () => {
         <FormikProvider value={formik}>
           <Box maw={800}>
             <NumberInput
+              readOnly
               className={classes.input}
               label="Price"
               placeholder="Total price"
@@ -262,7 +282,11 @@ const PostDetailPage = () => {
             />
 
             <Group position="right" mt="md">
-              <Button type="submit" onClick={() => formik.handleSubmit()}>
+              <Button
+                loading={createOrderLoading}
+                type="submit"
+                onClick={() => formik.handleSubmit()}
+              >
                 Submit
               </Button>
             </Group>
@@ -283,38 +307,53 @@ const PostDetailPage = () => {
             ownerId={data?.onwerId ?? 0}
           />
         </div>
-        <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
-          <Textarea
-            placeholder="Description"
-            label="Description"
-            className={classes.text_input}
-            autosize
-            minRows={4}
-            error={errors.content?.message as String}
-            {...register("content", { required: "This is required" })}
-          ></Textarea>
+        {data?.status != "Done" ? (
+          <form className={classes.form} onSubmit={handleSubmit(onSubmit)}>
+            <Textarea
+              placeholder="Description"
+              label="Description"
+              className={classes.text_input}
+              autosize
+              minRows={4}
+              error={errors.content?.message as String}
+              {...register("content", { required: "This is required" })}
+            ></Textarea>
 
-          <div className={classes.drop_zone}>
-            <Dropzone accept={IMAGE_MIME_TYPE} onDrop={setFiles}>
-              <Text ta="center">Drop images here</Text>
-            </Dropzone>
+            <div className={classes.drop_zone}>
+              <Dropzone accept={IMAGE_MIME_TYPE} onDrop={setFiles}>
+                <Text ta="center">Drop images here</Text>
+              </Dropzone>
 
-            <SimpleGrid
-              cols={4}
-              breakpoints={[{ maxWidth: "sm", cols: 1 }]}
-              mt={previews.length > 0 ? "xl" : 0}
+              <SimpleGrid
+                cols={4}
+                breakpoints={[{ maxWidth: "sm", cols: 1 }]}
+                mt={previews.length > 0 ? "xl" : 0}
+              >
+                {previews}
+              </SimpleGrid>
+            </div>
+            <Button
+              type="submit"
+              loading={isUpdatePostLoading || isCreateLoading}
+              className={classes.button}
             >
-              {previews}
-            </SimpleGrid>
+              Update
+            </Button>
+          </form>
+        ) : (
+          <div>
+            <Notification
+              icon={<IconCheck size="1.1rem" />}
+              color="teal"
+              title="Post is closed"
+              style={{
+                width: rem(500),
+              }}
+            >
+              This post is closed
+            </Notification>
           </div>
-          <Button
-            type="submit"
-            loading={isCreatePostLoading || isCreateLoading}
-            className={classes.button}
-          >
-            Update
-          </Button>
-        </form>
+        )}
       </Flex>
       <div>
         <p className={classes.title}>Active proposal</p>

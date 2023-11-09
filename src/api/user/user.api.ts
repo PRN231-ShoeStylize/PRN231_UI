@@ -6,6 +6,7 @@ import {
   GetUserResult,
   GetUserListResultByRole,
   UpdateProfileParams,
+  GetUserList,
 } from "./user.model";
 
 export const UserAPI = {
@@ -40,8 +41,12 @@ export const UserAPI = {
     const res = await httpClient.get<GetUserListResultByRole>(
       `/Users/role?${toQueryParams(params)}`
     );
-    console.log(res.data);
 
+    return res.data;
+  },
+
+  _getAllUser: async () => {
+    const res = await httpClient.get<GetUserList>(`/Users`);
     return res.data;
   },
 };

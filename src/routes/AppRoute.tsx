@@ -11,7 +11,7 @@ const AppRoute = () => {
     if (!isTokenValid()) {
       sessionStorage.clear();
       localStorage.clear();
-      navigate("/login");
+      navigate("/");
     }
   }, []);
   return <CommonRoute />;

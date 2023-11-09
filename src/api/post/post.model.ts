@@ -17,7 +17,7 @@ export type CreatePostParams = {
   postResources: string[];
 };
 
-export interface IPost{
+export interface IPost {
   content: string;
   resourceUrl: string;
   expireDate: Date;
@@ -29,3 +29,10 @@ export interface IPost{
   postResources: string[];
   id: number;
 }
+
+export type UpdatePostParams = {
+  content: string;
+  resourceUrl: string;
+  postResources: string[];
+  status: string;
+};

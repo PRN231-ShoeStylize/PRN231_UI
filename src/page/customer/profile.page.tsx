@@ -33,6 +33,7 @@ import { GetOrderResult } from "../../api/order/order.modal";
 import dayjs from "dayjs";
 import { useUpdateUserProfile } from "../../hooks/useUpdateUserProfile";
 import { notifications } from "@mantine/notifications";
+import { convertSubString } from "../../utils/helperFunction";
 
 const ProfilePage = () => {
   const { classes } = useStyles();
@@ -126,7 +127,8 @@ const ProfilePage = () => {
             className={classes.image}
             radius={"md"}
             src={item?.postResources?.[0]}
-            fit="cover"
+            fit="contain"
+            caption={convertSubString(item.content, 22)}
           />
         ) : (
           <p>{item.content}</p>

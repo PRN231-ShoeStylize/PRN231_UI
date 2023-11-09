@@ -19,9 +19,7 @@ export interface LoginResponseModel {
 export const useLogin = () => {
   const { mutate, isLoading, error, data } = useMutation({
     mutationKey: ["login"],
-    mutationFn: async (
-      params: LoginRequestModel
-    ): Promise<LoginResponseModel> => {
+    mutationFn: async (params: LoginRequestModel) => {
       return await UserAPI.login(params);
     },
   });
