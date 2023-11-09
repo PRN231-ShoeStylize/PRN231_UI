@@ -42,6 +42,7 @@ const ShopHomePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [displayedImages, setDisplayedImages] = useState<string[]>([]);
   const [selectedPostId, setSelectedPostId] = useState<number>(-1);
+  const [reload, setReload] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
   const [opened, { open, close }] = useDisclosure();
   const [imageOpend, openImageController] = useDisclosure();
@@ -63,7 +64,7 @@ const ShopHomePage: React.FC = () => {
 
   useEffect(() => {
     const getAllPost = async () => {
-      const res = await PostAPI.getAllPost();
+      const res = await PostAPI._getPostsForProvider();
       return res;
     };
 
@@ -71,7 +72,7 @@ const ShopHomePage: React.FC = () => {
       setPosts(res);
       console.log(res);
     });
-  }, []);
+  }, [reload]);
 
   const handleSubmit = async (params: CreateProposalParams) => {
     setIsLoading(true);
@@ -114,6 +115,7 @@ const ShopHomePage: React.FC = () => {
     }
     setIsLoading(false);
     handleCloseSubmitModal();
+    setReload(!reload)
   };
 
   const handleDisplayImage = (links: string[]) => {
@@ -136,6 +138,7 @@ const ShopHomePage: React.FC = () => {
     <>
       <Grid>
         <Grid.Col span={11}>
+          {posts.length == 0 && <h1 style={{textAlign: 'center'}}>There is no available post at the moment</h1>}
           {posts.map((post) =>
             post.status != "Done" ? (
               <ProposalCard

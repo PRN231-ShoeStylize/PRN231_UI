@@ -31,10 +31,11 @@ const OrderPage: React.FC = () => {
       <Tabs value={orderStatus} onTabChange={setOrderStatus}>
         <Tabs.List>
           <Tabs.Tab value={OrderStatus.Waiting}>Waiting Order</Tabs.Tab>
-          <Tabs.Tab value={OrderStatus.Paid}>Paid Order</Tabs.Tab>
+          <Tabs.Tab value={OrderStatus.Done}>Done Order</Tabs.Tab>
         </Tabs.List>
       </Tabs>
       <Grid>
+        {orders.length == 0 && <h1 style={{textAlign: 'center', paddingTop: '10px'}}>There is no {orderStatus?.toLowerCase()} order at the moment</h1>}
         {orders.map((order, index) => (
           <Grid.Col span={4}>
             <OrderWithStatus order={order} key={index} handleReload={function (): void {

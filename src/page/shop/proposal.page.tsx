@@ -149,7 +149,7 @@ const ProposalPage: React.FC = () => {
       >
         <Tabs.List>
           <Tabs.Tab value={ProposalStatus.Pending}>Pending Proposal</Tabs.Tab>
-          <Tabs.Tab value={ProposalStatus.Accepted}>Accepted Proposal</Tabs.Tab>
+          {/* <Tabs.Tab value={ProposalStatus.Accepted}>Accepted Proposal</Tabs.Tab> */}
           <Tabs.Tab value={ProposalStatus.Rejected}>Rejected Proposal</Tabs.Tab>
         </Tabs.List>
       </Tabs>

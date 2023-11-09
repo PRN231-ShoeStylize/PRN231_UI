@@ -1,37 +1,26 @@
-import { Badge, Button, Card, Group, Modal, Space, Text } from "@mantine/core";
+import { Badge, Button, Card, Group, Modal, Space, Text, Image } from "@mantine/core";
 import React, { useState } from "react";
 import { GetOrderResult, OrderStatus } from "../../api/order/order.modal";
 import { useDisclosure } from "@mantine/hooks";
 import { OrderAPI } from "../../api/order/order.api";
 import { showNotification } from "@mantine/notifications";
+import { IconFileDownload } from "@tabler/icons-react";
+import { Carousel, Embla } from "@mantine/carousel";
 interface IProps {
   order: GetOrderResult;
   handleReload: () => void;
 }
 const OrderWithStatus: React.FC<IProps> = ({ order, handleReload }) => {
-  const [opened, { open, close }] = useDisclosure(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const handleUpdateStatus = async (id: number, status: string) => {
-    setIsLoading(true)
-    const res = await OrderAPI.updateOrderStatus(id, status);
-    if (res) {
-      showNotification({
-        title: "Success",
-        message: "Status changed",
-        color: "lime",
-        // classNames: classes,
-      });
-      handleReload()
-    } else {
-      showNotification({
-        title: "Error",
-        message: "Failed to update order status",
-        color: "red",
-        // classNames: classes,
-      });
-    }
-    setIsLoading(false)
+  const [embla, setEmbla] = useState<Embla | null>(null);
+  const [displayedImages, setDisplayedImages] = useState<string[]>([]);
+  const [imageOpend, openImageController] = useDisclosure();
+
+  const handleDisplayImage = (links: string[]) => {
+    setDisplayedImages(links);
+    openImageController.open();
   };
+
   return (
     <>
       <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -85,36 +74,48 @@ const OrderWithStatus: React.FC<IProps> = ({ order, handleReload }) => {
             </tr>
           </table>
         </div>
-        {order.orderStatus === OrderStatus.Waiting && (
+        <div style={{ marginTop: "1em" }}>
           <Button
-            variant="light"
-            color="blue"
-            fullWidth
-            mt="md"
-            radius="md"
-            onClick={open}
+            style={{ marginRight: "1em" }}
+            leftIcon={<IconFileDownload size={14} />}
+            variant="default"
+            onClick={() =>
+              handleDisplayImage(order.proposal.submissionResources)
+            }
           >
-            Mark as paid
+            Show resources (
+            {order.proposal.submissionResources != null
+              ? order.proposal.submissionResources.length
+              : ""}
+            )
           </Button>
-        )}
+
+          {/* <Button style={{marginRight: '1em'}} leftIcon={<IconFileDownload size={14} />} variant="default">
+                                Detailed description
+                            </Button> */}
+        </div>
       </Card>
-      <Modal opened={opened} onClose={close} centered withCloseButton={false}>
-        <Modal.Header>
-          <h3 style={{ textAlign: "center" }}>
-            Are you sure to mark order #{order.id} as "Paid" ?
-          </h3>
-        </Modal.Header>
-        <Modal.Body>
-          <Text c="red" fw={"bold"} ta={"center"}>
-            ***This action could not be undone***
-          </Text>
-        </Modal.Body>
-        <Group>
-          <Button loading={isLoading} fullWidth onClick={() => handleUpdateStatus(order.id, OrderStatus.Paid)}>Confirm</Button>
-          <Button variant="filled" color="red" fullWidth onClick={close}>
-            Close
-          </Button>
-        </Group>
+      <Modal
+        opened={imageOpend}
+        onClose={openImageController.close}
+        // size={1000}
+      >
+        <div style={{ height: 500, display: "flex" }}>
+          <Carousel
+            getEmblaApi={setEmbla}
+            withIndicators
+            height="100%"
+            style={{ flex: 1 }}
+            loop
+            dragFree
+          >
+            {displayedImages.map((image) => (
+              <Carousel.Slide>
+                <Image src={image} height={500} />
+              </Carousel.Slide>
+            ))}
+          </Carousel>
+        </div>
       </Modal>
     </>
   );

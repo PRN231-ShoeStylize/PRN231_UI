@@ -32,4 +32,12 @@ export const PostAPI = {
     const res = await httpClient.put<any>(`/Post/${postId}`, params);
     return res.data;
   },
+  _getPostsForProvider: async (): Promise<GetPostResult[]> => {
+    const res = await httpClient.get<GetPostResult[]>(`/Post/provider`, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem(TOKEN)}`,
+      },
+    });
+    return res.data;
+  },
 };

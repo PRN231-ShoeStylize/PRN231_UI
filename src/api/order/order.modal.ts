@@ -4,6 +4,7 @@ export enum OrderStatus {
   Waiting = "Waiting",
   Paid = "Paid",
   Deleted = "Deleted",
+  Done = "Done"
 }
 
 export type CreateOrderParams = {
@@ -44,7 +45,7 @@ export type GetOrderResult = {
       postResources: any;
       id: number;
     };
-    submissionResources: any;
+    submissionResources: string[];
     id: number;
   };
   proposalId: number;
